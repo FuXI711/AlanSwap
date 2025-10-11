@@ -41,7 +41,7 @@ func StartLiquidityPoolSync(c context.Context) {
 			}
 
 			// 获取合约地址
-			dexAddress := chain.DexAddress
+			dexAddress := chain.Address
 			if dexAddress == "" {
 				log.Logger.Error("DEX合约地址未配置", zap.Int("chain_id", chainId))
 				return
@@ -188,16 +188,22 @@ func parseSwapEvent(vLog types.Log, chainId int) *model.LiquidityPoolEvent {
 	amount1Out := new(big.Int).SetBytes(common.TrimLeftZeroes(data[96:128]))
 
 	return &model.LiquidityPoolEvent{
-		ChainId:     int64(chainId),
-		TxHash:      vLog.TxHash.Hex(),
-		BlockNumber: int64(vLog.BlockNumber),
-		EventType:   "Swap",
-		PoolAddress: vLog.Address.Hex(),
-		UserAddress: sender,
-		Amount0In:   amount0In.String(),
-		Amount1In:   amount1In.String(),
-		Amount0Out:  amount0Out.String(),
-		Amount1Out:  amount1Out.String(),
+		ChainId:       int64(chainId),
+		TxHash:        vLog.TxHash.Hex(),
+		BlockNumber:   int64(vLog.BlockNumber),
+		EventType:     "Swap",
+		PoolAddress:   vLog.Address.Hex(),
+		Token0Address: "", // 暂时留空，需要从合约获取
+		Token1Address: "", // 暂时留空，需要从合约获取
+		UserAddress:   sender,
+		Amount0In:     amount0In.String(),
+		Amount1In:     amount1In.String(),
+		Amount0Out:    amount0Out.String(),
+		Amount1Out:    amount1Out.String(),
+		Reserve0:      "0", // 默认值
+		Reserve1:      "0", // 默认值
+		Price:         "0", // 默认值
+		Liquidity:     "0", // 默认值
 	}
 }
 
@@ -215,16 +221,22 @@ func parseMintEvent(vLog types.Log, chainId int) *model.LiquidityPoolEvent {
 	amount1 := new(big.Int).SetBytes(common.TrimLeftZeroes(data[32:64]))
 
 	return &model.LiquidityPoolEvent{
-		ChainId:     int64(chainId),
-		TxHash:      vLog.TxHash.Hex(),
-		BlockNumber: int64(vLog.BlockNumber),
-		EventType:   "AddLiquidity",
-		PoolAddress: vLog.Address.Hex(),
-		UserAddress: sender,
-		Amount0In:   amount0.String(),
-		Amount1In:   amount1.String(),
-		Amount0Out:  "0",
-		Amount1Out:  "0",
+		ChainId:       int64(chainId),
+		TxHash:        vLog.TxHash.Hex(),
+		BlockNumber:   int64(vLog.BlockNumber),
+		EventType:     "AddLiquidity",
+		PoolAddress:   vLog.Address.Hex(),
+		Token0Address: "", // 暂时留空，需要从合约获取
+		Token1Address: "", // 暂时留空，需要从合约获取
+		UserAddress:   sender,
+		Amount0In:     amount0.String(),
+		Amount1In:     amount1.String(),
+		Amount0Out:    "0",
+		Amount1Out:    "0",
+		Reserve0:      "0", // 默认值
+		Reserve1:      "0", // 默认值
+		Price:         "0", // 默认值
+		Liquidity:     "0", // 默认值
 	}
 }
 
@@ -243,16 +255,22 @@ func parseBurnEvent(vLog types.Log, chainId int) *model.LiquidityPoolEvent {
 	amount1 := new(big.Int).SetBytes(common.TrimLeftZeroes(data[32:64]))
 
 	return &model.LiquidityPoolEvent{
-		ChainId:     int64(chainId),
-		TxHash:      vLog.TxHash.Hex(),
-		BlockNumber: int64(vLog.BlockNumber),
-		EventType:   "RemoveLiquidity",
-		PoolAddress: vLog.Address.Hex(),
-		UserAddress: sender,
-		Amount0In:   "0",
-		Amount1In:   "0",
-		Amount0Out:  amount0.String(),
-		Amount1Out:  amount1.String(),
+		ChainId:       int64(chainId),
+		TxHash:        vLog.TxHash.Hex(),
+		BlockNumber:   int64(vLog.BlockNumber),
+		EventType:     "RemoveLiquidity",
+		PoolAddress:   vLog.Address.Hex(),
+		Token0Address: "", // 暂时留空，需要从合约获取
+		Token1Address: "", // 暂时留空，需要从合约获取
+		UserAddress:   sender,
+		Amount0In:     "0",
+		Amount1In:     "0",
+		Amount0Out:    amount0.String(),
+		Amount1Out:    amount1.String(),
+		Reserve0:      "0", // 默认值
+		Reserve1:      "0", // 默认值
+		Price:         "0", // 默认值
+		Liquidity:     "0", // 默认值
 	}
 }
 
@@ -296,10 +314,22 @@ func updateLiquidityPoolInfo(tx *gorm.DB, events []*model.LiquidityPoolEvent) er
 		if err == gorm.ErrRecordNotFound {
 			// 创建新的流动性池记录
 			pool = model.LiquidityPool{
-				ChainId:      poolEventList[0].ChainId,
-				PoolAddress:  poolAddress,
-				LastBlockNum: poolEventList[len(poolEventList)-1].BlockNumber,
-				IsActive:     true,
+				ChainId:        poolEventList[0].ChainId,
+				PoolAddress:    poolAddress,
+				Token0Address:  "",  // 暂时留空，需要从合约获取
+				Token1Address:  "",  // 暂时留空，需要从合约获取
+				Token0Symbol:   "",  // 暂时留空
+				Token1Symbol:   "",  // 暂时留空
+				Token0Decimals: 0,   // 默认值
+				Token1Decimals: 0,   // 默认值
+				Reserve0:       "0", // 默认值
+				Reserve1:       "0", // 默认值
+				TotalSupply:    "0", // 默认值
+				Price:          "0", // 默认值
+				Volume24h:      "0", // 默认值
+				TxCount:        0,   // 默认值
+				LastBlockNum:   poolEventList[len(poolEventList)-1].BlockNumber,
+				IsActive:       true,
 			}
 
 			if err := tx.Create(&pool).Error; err != nil {

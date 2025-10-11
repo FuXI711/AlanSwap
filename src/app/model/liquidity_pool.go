@@ -12,8 +12,8 @@ type LiquidityPoolEvent struct {
 	BlockNumber   int64     `json:"blockNumber" gorm:"column:block_number;not null"`
 	EventType     string    `json:"eventType" gorm:"column:event_type;not null"` // Swap, AddLiquidity, RemoveLiquidity
 	PoolAddress   string    `json:"poolAddress" gorm:"column:pool_address;not null;index"`
-	Token0Address string    `json:"token0Address" gorm:"column:token0_address;not null"`
-	Token1Address string    `json:"token1Address" gorm:"column:token1_address;not null"`
+	Token0Address string    `json:"token0Address" gorm:"column:token0_address"`
+	Token1Address string    `json:"token1Address" gorm:"column:token1_address"`
 	UserAddress   string    `json:"userAddress" gorm:"column:user_address;not null;index"`
 	Amount0In     string    `json:"amount0In" gorm:"column:amount0_in;type:decimal(78,0)"` // 大数用字符串存储
 	Amount1In     string    `json:"amount1In" gorm:"column:amount1_in;type:decimal(78,0)"`
@@ -37,8 +37,8 @@ type LiquidityPool struct {
 	Id             int64     `json:"id" gorm:"column:id;primaryKey;autoIncrement"`
 	ChainId        int64     `json:"chainId" gorm:"column:chain_id;not null"`
 	PoolAddress    string    `json:"poolAddress" gorm:"column:pool_address;not null;uniqueIndex:idx_chain_pool"`
-	Token0Address  string    `json:"token0Address" gorm:"column:token0_address;not null"`
-	Token1Address  string    `json:"token1Address" gorm:"column:token1_address;not null"`
+	Token0Address  string    `json:"token0Address" gorm:"column:token0_address"`
+	Token1Address  string    `json:"token1Address" gorm:"column:token1_address"`
 	Token0Symbol   string    `json:"token0Symbol" gorm:"column:token0_symbol"`
 	Token1Symbol   string    `json:"token1Symbol" gorm:"column:token1_symbol"`
 	Token0Decimals int       `json:"token0Decimals" gorm:"column:token0_decimals"`

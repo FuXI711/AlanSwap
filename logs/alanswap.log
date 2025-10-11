@@ -20,3 +20,209 @@
 {"level":"info","time":"2025-10-11 14:22:38.984","line":"src\\app\\sync\\sync.go:25","msg":"启动流动性池监听服务","service":"alanswap"}
 {"level":"info","time":"2025-10-11 14:22:38.984","line":"src\\app\\sync\\liquidity_pool_sync.go:34","msg":"启动流动性池事件监听","service":"alanswap","chain_id":11155111}
 {"level":"error","time":"2025-10-11 14:22:38.984","line":"src\\app\\sync\\liquidity_pool_sync.go:39","msg":"DEX合约地址未配置","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 14:49:38.655","line":"src\\core\\app.go:56","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:49:38.656","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:49:38.677","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:49:38.688","line":"src\\core\\db\\redis.go:33","msg":"Redis connect success","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:49:38.688","line":"src\\core\\app.go:75","msg":"正在初始化链客户端","service":"alanswap","chain_id":11155111,"endpoint":"https://sepolia.infura.io/v3/96a918f215974f62b5db9a1907540819"}
+{"level":"info","time":"2025-10-11 14:49:38.688","line":"src\\core\\app.go:83","msg":"链客户端初始化成功","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 14:49:38.789","line":"src\\app\\sync\\sync.go:25","msg":"启动流动性池监听服务","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:49:38.789","line":"src\\app\\sync\\liquidity_pool_sync.go:33","msg":"启动流动性池事件监听","service":"alanswap","chain_id":11155111}
+{"level":"error","time":"2025-10-11 14:49:38.794","line":"src\\app\\sync\\liquidity_pool_sync.go:46","msg":"DEX合约地址未配置","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 14:51:49.054","line":"src\\core\\app.go:56","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:51:49.055","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:51:49.072","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:51:49.086","line":"src\\core\\db\\redis.go:33","msg":"Redis connect success","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:51:49.086","line":"src\\core\\app.go:75","msg":"正在初始化链客户端","service":"alanswap","chain_id":11155111,"endpoint":"https://sepolia.infura.io/v3/96a918f215974f62b5db9a1907540819"}
+{"level":"info","time":"2025-10-11 14:51:49.086","line":"src\\core\\app.go:83","msg":"链客户端初始化成功","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 14:51:49.187","line":"src\\app\\sync\\sync.go:25","msg":"启动流动性池监听服务","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:51:49.187","line":"src\\app\\sync\\liquidity_pool_sync.go:33","msg":"启动流动性池事件监听","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 14:52:03.554","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:52:03.814","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:52:03.818","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:52:03.819","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:52:13.445","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:52:13.696","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:52:13.700","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:52:13.701","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:52:25.444","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:52:25.698","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:52:25.701","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:52:25.703","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:52:37.445","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:52:37.706","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:52:37.709","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:52:37.710","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:52:49.447","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:52:49.711","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:52:49.715","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:52:49.715","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:53:03.370","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:53:03.625","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:53:03.628","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:53:03.629","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:53:13.440","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:53:13.693","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:53:13.696","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:53:13.696","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:53:25.444","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:53:25.713","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:53:25.716","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:53:25.717","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:53:37.445","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:53:37.720","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:53:37.725","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:53:37.725","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:53:49.443","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:53:49.696","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:53:49.703","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:53:49.705","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:54:01.446","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:54:01.700","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:54:01.710","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:54:01.711","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:54:13.445","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:54:13.699","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:54:13.705","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:54:13.705","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:54:25.461","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:54:25.721","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:54:25.724","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:54:25.725","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:54:37.441","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:54:38.390","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:54:38.393","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:54:38.394","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:54:49.444","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:54:49.695","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:54:49.699","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:54:49.700","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:55:01.752","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:55:02.011","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:55:02.018","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:55:02.025","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:55:13.440","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:55:13.713","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:55:13.718","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:55:13.718","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:55:25.443","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:55:25.698","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:55:25.704","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:55:25.705","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:55:37.454","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:55:37.938","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:55:37.941","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:55:37.944","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:55:49.445","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:55:49.698","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:55:49.703","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:55:49.704","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:56:01.440","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:56:01.695","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:56:01.699","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:56:01.700","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:56:13.458","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:56:13.729","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:56:13.733","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:56:13.733","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:56:25.444","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:56:25.696","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:56:25.700","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:56:25.700","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 14:58:00.496","line":"src\\core\\app.go:56","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:58:00.497","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:58:00.516","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:58:00.521","line":"src\\core\\db\\redis.go:33","msg":"Redis connect success","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:58:00.521","line":"src\\core\\app.go:75","msg":"正在初始化链客户端","service":"alanswap","chain_id":11155111,"endpoint":"https://sepolia.infura.io/v3/96a918f215974f62b5db9a1907540819"}
+{"level":"info","time":"2025-10-11 14:58:00.521","line":"src\\core\\app.go:83","msg":"链客户端初始化成功","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 14:58:00.622","line":"src\\app\\sync\\sync.go:25","msg":"启动流动性池监听服务","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:58:00.622","line":"src\\app\\sync\\liquidity_pool_sync.go:33","msg":"启动流动性池事件监听","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 14:58:13.712","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 14:58:13.977","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 14:58:13.980","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 14:58:13.981","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 15:01:53.009","line":"src\\core\\app.go:56","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:01:53.009","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:01:53.026","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:01:53.032","line":"src\\core\\db\\redis.go:33","msg":"Redis connect success","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:01:53.032","line":"src\\core\\app.go:75","msg":"正在初始化链客户端","service":"alanswap","chain_id":11155111,"endpoint":"https://sepolia.infura.io/v3/96a918f215974f62b5db9a1907540819"}
+{"level":"info","time":"2025-10-11 15:01:53.032","line":"src\\core\\app.go:83","msg":"链客户端初始化成功","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 15:01:53.133","line":"src\\app\\sync\\sync.go:25","msg":"启动流动性池监听服务","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:01:53.134","line":"src\\app\\sync\\liquidity_pool_sync.go:33","msg":"启动流动性池事件监听","service":"alanswap","chain_id":11155111}
+{"level":"error","time":"2025-10-11 15:01:53.140","line":"src\\app\\sync\\liquidity_pool_sync.go:46","msg":"DEX合约地址未配置","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 15:02:05.961","line":"src\\core\\app.go:56","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:02:05.962","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:02:05.979","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:02:05.984","line":"src\\core\\db\\redis.go:33","msg":"Redis connect success","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:02:05.984","line":"src\\core\\app.go:75","msg":"正在初始化链客户端","service":"alanswap","chain_id":11155111,"endpoint":"https://sepolia.infura.io/v3/96a918f215974f62b5db9a1907540819"}
+{"level":"info","time":"2025-10-11 15:02:05.984","line":"src\\core\\app.go:83","msg":"链客户端初始化成功","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 15:02:06.084","line":"src\\app\\sync\\sync.go:25","msg":"启动流动性池监听服务","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:02:06.084","line":"src\\app\\sync\\liquidity_pool_sync.go:33","msg":"启动流动性池事件监听","service":"alanswap","chain_id":11155111}
+{"level":"error","time":"2025-10-11 15:02:06.089","line":"src\\app\\sync\\liquidity_pool_sync.go:46","msg":"DEX合约地址未配置","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 15:02:59.717","line":"src\\core\\app.go:56","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:02:59.718","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:02:59.737","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:02:59.745","line":"src\\core\\db\\redis.go:33","msg":"Redis connect success","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:02:59.745","line":"src\\core\\app.go:75","msg":"正在初始化链客户端","service":"alanswap","chain_id":11155111,"endpoint":"https://sepolia.infura.io/v3/96a918f215974f62b5db9a1907540819"}
+{"level":"info","time":"2025-10-11 15:02:59.745","line":"src\\core\\app.go:83","msg":"链客户端初始化成功","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 15:02:59.846","line":"src\\app\\sync\\sync.go:25","msg":"启动流动性池监听服务","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:02:59.846","line":"src\\app\\sync\\liquidity_pool_sync.go:33","msg":"启动流动性池事件监听","service":"alanswap","chain_id":11155111}
+{"level":"error","time":"2025-10-11 15:02:59.852","line":"src\\app\\sync\\liquidity_pool_sync.go:46","msg":"DEX合约地址未配置","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 15:04:41.822","line":"src\\core\\app.go:56","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:04:41.822","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:04:41.839","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:04:41.843","line":"src\\core\\db\\redis.go:33","msg":"Redis connect success","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:04:41.843","line":"src\\core\\app.go:75","msg":"正在初始化链客户端","service":"alanswap","chain_id":11155111,"endpoint":"https://sepolia.infura.io/v3/96a918f215974f62b5db9a1907540819"}
+{"level":"info","time":"2025-10-11 15:04:41.843","line":"src\\core\\app.go:83","msg":"链客户端初始化成功","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 15:04:41.944","line":"src\\app\\sync\\sync.go:25","msg":"启动流动性池监听服务","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:04:41.944","line":"src\\app\\sync\\liquidity_pool_sync.go:33","msg":"启动流动性池事件监听","service":"alanswap","chain_id":11155111}
+{"level":"error","time":"2025-10-11 15:04:41.949","line":"src\\app\\sync\\liquidity_pool_sync.go:46","msg":"DEX合约地址未配置","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 15:04:50.995","line":"src\\core\\app.go:56","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:04:50.995","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:04:51.012","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:04:51.022","line":"src\\core\\db\\redis.go:33","msg":"Redis connect success","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:04:51.022","line":"src\\core\\app.go:75","msg":"正在初始化链客户端","service":"alanswap","chain_id":11155111,"endpoint":"https://sepolia.infura.io/v3/96a918f215974f62b5db9a1907540819"}
+{"level":"info","time":"2025-10-11 15:04:51.022","line":"src\\core\\app.go:83","msg":"链客户端初始化成功","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 15:04:51.123","line":"src\\app\\sync\\sync.go:25","msg":"启动流动性池监听服务","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:04:51.123","line":"src\\app\\sync\\liquidity_pool_sync.go:33","msg":"启动流动性池事件监听","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 15:05:05.876","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 15:05:06.147","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 15:05:06.151","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 15:05:06.151","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 15:05:15.373","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 15:05:15.620","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 15:05:15.623","line":"src\\app\\sync\\liquidity_pool_sync.go:268","msg":"批量插入流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 15:05:15.624","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 15:11:27.256","line":"src\\core\\app.go:56","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:11:27.256","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:11:27.276","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:11:27.281","line":"src\\core\\db\\redis.go:33","msg":"Redis connect success","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:11:27.281","line":"src\\core\\app.go:75","msg":"正在初始化链客户端","service":"alanswap","chain_id":11155111,"endpoint":"https://sepolia.infura.io/v3/96a918f215974f62b5db9a1907540819"}
+{"level":"info","time":"2025-10-11 15:11:27.282","line":"src\\core\\app.go:83","msg":"链客户端初始化成功","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 15:11:27.383","line":"src\\app\\sync\\sync.go:25","msg":"启动流动性池监听服务","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:11:27.383","line":"src\\app\\sync\\liquidity_pool_sync.go:33","msg":"启动流动性池事件监听","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 15:11:40.372","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 15:11:40.627","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 15:11:40.645","line":"src\\app\\sync\\liquidity_pool_sync.go:324","msg":"创建流动性池记录失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 15:11:40.645","line":"src\\app\\sync\\liquidity_pool_sync.go:292","msg":"更新流动性池信息失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 15:11:40.648","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 15:11:51.633","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 15:11:51.873","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"error","time":"2025-10-11 15:11:51.878","line":"src\\app\\sync\\liquidity_pool_sync.go:324","msg":"创建流动性池记录失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 15:11:51.878","line":"src\\app\\sync\\liquidity_pool_sync.go:292","msg":"更新流动性池信息失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"error","time":"2025-10-11 15:11:51.880","line":"src\\app\\sync\\liquidity_pool_sync.go:136","msg":"保存流动性池事件失败","service":"alanswap","error":"ERROR: invalid input syntax for type numeric: \"\" (SQLSTATE 22P02)"}
+{"level":"info","time":"2025-10-11 15:14:25.546","line":"src\\core\\app.go:56","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:14:25.546","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:14:25.564","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:14:25.575","line":"src\\core\\db\\redis.go:33","msg":"Redis connect success","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:14:25.575","line":"src\\core\\app.go:75","msg":"正在初始化链客户端","service":"alanswap","chain_id":11155111,"endpoint":"https://sepolia.infura.io/v3/96a918f215974f62b5db9a1907540819"}
+{"level":"info","time":"2025-10-11 15:14:25.575","line":"src\\core\\app.go:83","msg":"链客户端初始化成功","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 15:14:25.676","line":"src\\app\\sync\\sync.go:25","msg":"启动流动性池监听服务","service":"alanswap"}
+{"level":"info","time":"2025-10-11 15:14:25.676","line":"src\\app\\sync\\liquidity_pool_sync.go:33","msg":"启动流动性池事件监听","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 15:14:39.000","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9386080,"to_block":9387080}
+{"level":"info","time":"2025-10-11 15:14:39.281","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"info","time":"2025-10-11 15:14:49.933","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9387081,"to_block":9387646}
+{"level":"info","time":"2025-10-11 15:14:50.188","line":"src\\app\\sync\\liquidity_pool_sync.go:132","msg":"解析流动性池事件成功","service":"alanswap","event_count":3}
+{"level":"info","time":"2025-10-11 15:15:13.939","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9387647,"to_block":9387648}
+{"level":"info","time":"2025-10-11 15:15:25.956","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9387647,"to_block":9387649}
+{"level":"info","time":"2025-10-11 15:15:37.938","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9387647,"to_block":9387650}
