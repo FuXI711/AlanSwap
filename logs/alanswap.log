@@ -1,0 +1,13 @@
+{"level":"info","time":"2025-10-11 11:36:16.227","line":"src\\core\\app.go:54","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-11 11:36:16.228","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-11 11:36:46.338","line":"src\\core\\app.go:54","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-11 11:36:46.338","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-11 11:38:14.250","line":"src\\core\\app.go:54","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-11 11:38:14.250","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-11 11:38:14.266","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"error","time":"2025-10-11 11:38:14.316","line":"src\\core\\db\\redis.go:31","msg":"Failed to connect to Redis: NOAUTH Authentication required.","service":"alanswap"}
+{"level":"info","time":"2025-10-11 11:38:36.314","line":"src\\core\\app.go:54","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-11 11:38:36.315","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"error","time":"2025-10-11 11:38:36.317","line":"src\\core\\app.go:58","msg":"init pprof error","service":"alanswap","error":"listen tcp 0.0.0.0:6060: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted."}
+{"level":"info","time":"2025-10-11 11:38:36.332","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"error","time":"2025-10-11 11:38:36.373","line":"src\\core\\db\\redis.go:31","msg":"Failed to connect to Redis: NOAUTH Authentication required.","service":"alanswap"}
