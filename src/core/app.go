@@ -113,7 +113,7 @@ func initApiGin() {
 }
 
 func initSync(c context.Context) {
-	go sync.StartSync(c)
+	sync.StartSync(c)
 }
 func initComputeIntegral() {
 	go sync.InitComputeIntegral()
