@@ -32,11 +32,11 @@ func StartLiquidityPoolSync(c context.Context) {
 
 			log.Logger.Info("启动流动性池事件监听", zap.Int("chain_id", chainId))
 
-			// 查询数据库的链信息，包括合约地址和最后区块号
+			// 查询数据库的链信息，包括合约地址和最后区块号（只查询流动性池服务配置）
 			var chain model.Chain
-			err := ctx.Ctx.DB.Model(&model.Chain{}).Where("chain_id = ?", int64(chainId)).First(&chain).Error
+			err := ctx.Ctx.DB.Model(&model.Chain{}).Where("chain_id = ? AND service_type = ?", int64(chainId), "liquidity").First(&chain).Error
 			if err != nil {
-				log.Logger.Error("查询链信息失败", zap.Int("chain_id", chainId), zap.Error(err))
+				log.Logger.Error("查询流动性池链信息失败", zap.Int("chain_id", chainId), zap.Error(err))
 				return
 			}
 
@@ -47,7 +47,7 @@ func StartLiquidityPoolSync(c context.Context) {
 				return
 			}
 
-			lastBlockNum := chain.LiquidityLastBlockNum
+			lastBlockNum := chain.LastBlockNum
 
 			// 定义流动性池相关事件的topic hash
 			// Swap事件: Swap(address indexed sender, uint amount0In, uint amount1In, uint amount0Out, uint amount1Out, address indexed to)
@@ -329,6 +329,6 @@ func updateLiquidityPoolInfo(tx *gorm.DB, events []*model.LiquidityPoolEvent) er
 
 // updateLiquidityPoolBlockNumber 更新流动性池监听的区块号
 func updateLiquidityPoolBlockNumber(chainId int, blockNumber uint64) error {
-	// 更新流动性池监听的专用区块号字段
-	return ctx.Ctx.DB.Model(&model.Chain{}).Where("chain_id = ?", int64(chainId)).Update("liquidity_last_block_num", blockNumber).Error
+	// 更新流动性池服务配置的区块号
+	return ctx.Ctx.DB.Model(&model.Chain{}).Where("chain_id = ? AND service_type = ?", int64(chainId), "liquidity").Update("last_block_num", blockNumber).Error
 }
