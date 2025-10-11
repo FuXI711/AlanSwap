@@ -18,7 +18,7 @@ password = "alanpasswd"
 host = "localhost"
 port = "6379"
 db = 1
-password = ""
+password = "redispasswd"
 max_idle = 10
 max_active = 0
 idle_timeout = 180
@@ -34,5 +34,4 @@ endpoint = "https://sepolia.infura.io/v3/96a918f215974f62b5db9a1907540819"
 pprof_enable = true
 pprof_port = 6060
 
-[contract_cfg]
-dex_address = "0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74" # undeploy
+# DEX合约地址现在存储在chain表中，不再从配置文件读取

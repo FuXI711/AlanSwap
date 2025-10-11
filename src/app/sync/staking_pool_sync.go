@@ -40,7 +40,7 @@ func StartStakingPoolSync(c context.Context) {
 				log.Logger.Error("查询链信息失败", zap.Int("chain_id", chainId), zap.Error(err))
 				return
 			}
-			lastBlockNum := chain.LastBlockNum
+			lastBlockNum := chain.StakingLastBlockNum
 
 			// Staked事件的topic hash
 			stakedTopic := crypto.Keccak256Hash([]byte("Staked(address,uint256,address,uint256,uint256,uint256)")).Hex()
@@ -195,9 +195,9 @@ func analysisWithdrawnTopic(vLog types.Log, chainId int) *model.UserOperationRec
 // updateDbUserAmount 更新数据库用户金额
 func updateDbUserAmount(userOperationRecords []*model.UserOperationRecord, chainId int, targetBlockNum uint64) error {
 	if len(userOperationRecords) == 0 {
-		// 更新链的最后区块号
-		if err := ctx.Ctx.DB.Model(&model.Chain{}).Where("chain_id = ?", int64(chainId)).Update("last_block_num", targetBlockNum).Error; err != nil {
-			log.Logger.Error("更新最后区块号失败", zap.Int("chain_id", chainId), zap.Error(err))
+		// 更新质押池监听的最后区块号
+		if err := ctx.Ctx.DB.Model(&model.Chain{}).Where("chain_id = ?", int64(chainId)).Update("staking_last_block_num", targetBlockNum).Error; err != nil {
+			log.Logger.Error("更新质押池监听最后区块号失败", zap.Int("chain_id", chainId), zap.Error(err))
 			return err
 		}
 		log.Logger.Info("更新数据表最后区块号成功" + strconv.Itoa(int(targetBlockNum)))
@@ -244,9 +244,9 @@ func updateDbUserAmount(userOperationRecords []*model.UserOperationRecord, chain
 				return err
 			}
 		}
-		// 更新链的最后区块号
-		if err := tx.Model(&model.Chain{}).Where("chain_id = ?", int64(chainId)).Update("last_block_num", targetBlockNum).Error; err != nil {
-			log.Logger.Error("更新最后区块号失败", zap.Int("chain_id", chainId), zap.Error(err))
+		// 更新质押池监听的最后区块号
+		if err := tx.Model(&model.Chain{}).Where("chain_id = ?", int64(chainId)).Update("staking_last_block_num", targetBlockNum).Error; err != nil {
+			log.Logger.Error("更新质押池监听最后区块号失败", zap.Int("chain_id", chainId), zap.Error(err))
 			return err
 		}
 		return nil

@@ -10,12 +10,11 @@ import (
 var Conf *Config
 
 type Config struct {
-	App         AppConfig
-	Monitor     MonitorConfig
-	Pgsql       PgsqlConfig
-	Redis       RedisConfig
-	Chains      []ChainConfig
-	ContractCfg ContractConfig
+	App     AppConfig
+	Monitor MonitorConfig
+	Pgsql   PgsqlConfig
+	Redis   RedisConfig
+	Chains  []ChainConfig
 }
 type AppConfig struct {
 	Name      string `toml:"name" json:"name"`
@@ -54,10 +53,6 @@ type ChainConfig struct {
 	Name     string `toml:"name" json:"name"`
 	ChainId  int    `toml:"chain_id" json:"chainId"`
 	Endpoint string `toml:"endpoint" json:"endpoint"`
-}
-
-type ContractConfig struct {
-	DexAddress string `toml:"dex_address" json:"dexAddress"`
 }
 
 // InitConfig 初始化配置

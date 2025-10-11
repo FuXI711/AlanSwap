@@ -11,7 +11,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/mumu/cryptoSwap/src/app/model"
 	"github.com/mumu/cryptoSwap/src/core/chainclient/evm"
-	"github.com/mumu/cryptoSwap/src/core/config"
 	"github.com/mumu/cryptoSwap/src/core/ctx"
 	"github.com/mumu/cryptoSwap/src/core/log"
 	"go.uber.org/zap"
@@ -33,21 +32,22 @@ func StartLiquidityPoolSync(c context.Context) {
 
 			log.Logger.Info("启动流动性池事件监听", zap.Int("chain_id", chainId))
 
-			// 获取合约地址
-			dexAddress := config.Conf.ContractCfg.DexAddress
-			if dexAddress == "" {
-				log.Logger.Error("DEX合约地址未配置", zap.Int("chain_id", chainId))
-				return
-			}
-
-			// 查询数据库的最后一次区块
+			// 查询数据库的链信息，包括合约地址和最后区块号
 			var chain model.Chain
 			err := ctx.Ctx.DB.Model(&model.Chain{}).Where("chain_id = ?", int64(chainId)).First(&chain).Error
 			if err != nil {
 				log.Logger.Error("查询链信息失败", zap.Int("chain_id", chainId), zap.Error(err))
 				return
 			}
-			lastBlockNum := chain.LastBlockNum
+
+			// 获取合约地址
+			dexAddress := chain.DexAddress
+			if dexAddress == "" {
+				log.Logger.Error("DEX合约地址未配置", zap.Int("chain_id", chainId))
+				return
+			}
+
+			lastBlockNum := chain.LiquidityLastBlockNum
 
 			// 定义流动性池相关事件的topic hash
 			// Swap事件: Swap(address indexed sender, uint amount0In, uint amount1In, uint amount0Out, uint amount1Out, address indexed to)
@@ -329,7 +329,6 @@ func updateLiquidityPoolInfo(tx *gorm.DB, events []*model.LiquidityPoolEvent) er
 
 // updateLiquidityPoolBlockNumber 更新流动性池监听的区块号
 func updateLiquidityPoolBlockNumber(chainId int, blockNumber uint64) error {
-	// 这里可以创建一个专门的表来记录流动性池监听的区块号
-	// 或者复用现有的chain表，添加一个字段来记录流动性池监听的区块号
-	return ctx.Ctx.DB.Model(&model.Chain{}).Where("chain_id = ?", int64(chainId)).Update("last_block_num", blockNumber).Error
+	// 更新流动性池监听的专用区块号字段
+	return ctx.Ctx.DB.Model(&model.Chain{}).Where("chain_id = ?", int64(chainId)).Update("liquidity_last_block_num", blockNumber).Error
 }

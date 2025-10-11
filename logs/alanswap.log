@@ -11,3 +11,12 @@
 {"level":"error","time":"2025-10-11 11:38:36.317","line":"src\\core\\app.go:58","msg":"init pprof error","service":"alanswap","error":"listen tcp 0.0.0.0:6060: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted."}
 {"level":"info","time":"2025-10-11 11:38:36.332","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
 {"level":"error","time":"2025-10-11 11:38:36.373","line":"src\\core\\db\\redis.go:31","msg":"Failed to connect to Redis: NOAUTH Authentication required.","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:22:38.858","line":"src\\core\\app.go:56","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:22:38.858","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:22:38.878","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:22:38.884","line":"src\\core\\db\\redis.go:33","msg":"Redis connect success","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:22:38.884","line":"src\\core\\app.go:75","msg":"正在初始化链客户端","service":"alanswap","chain_id":11155111,"endpoint":"https://sepolia.infura.io/v3/96a918f215974f62b5db9a1907540819"}
+{"level":"info","time":"2025-10-11 14:22:38.884","line":"src\\core\\app.go:83","msg":"链客户端初始化成功","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-11 14:22:38.984","line":"src\\app\\sync\\sync.go:25","msg":"启动流动性池监听服务","service":"alanswap"}
+{"level":"info","time":"2025-10-11 14:22:38.984","line":"src\\app\\sync\\liquidity_pool_sync.go:34","msg":"启动流动性池事件监听","service":"alanswap","chain_id":11155111}
+{"level":"error","time":"2025-10-11 14:22:38.984","line":"src\\app\\sync\\liquidity_pool_sync.go:39","msg":"DEX合约地址未配置","service":"alanswap","chain_id":11155111}
