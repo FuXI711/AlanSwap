@@ -3,6 +3,9 @@ package core
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/mumu/cryptoSwap/src/app/sync"
 	"github.com/mumu/cryptoSwap/src/core/chainclient"
 	"github.com/mumu/cryptoSwap/src/core/config"
@@ -11,7 +14,6 @@ import (
 	"github.com/mumu/cryptoSwap/src/core/gin/router"
 	"github.com/mumu/cryptoSwap/src/core/log"
 	"go.uber.org/zap"
-	"net/http"
 )
 
 // Start
@@ -70,6 +72,7 @@ func initDB() {
 func initChainClient() {
 	chainMap := make(map[int]*chainclient.ChainClient)
 	for _, chain := range config.Conf.Chains {
+		log.Logger.Info("正在初始化链客户端", zap.Int("chain_id", chain.ChainId), zap.String("endpoint", chain.Endpoint))
 		client, err := chainclient.New(chain.ChainId, chain.Endpoint)
 		if err != nil {
 			log.Logger.Error("init chain client error", zap.Error(err))
@@ -77,6 +80,7 @@ func initChainClient() {
 		}
 
 		chainMap[chain.ChainId] = &client
+		log.Logger.Info("链客户端初始化成功", zap.Int("chain_id", chain.ChainId))
 	}
 
 	ctx.Ctx.ChainMap = chainMap
@@ -85,10 +89,17 @@ func initGin() {
 	r := router.InitRouter()
 	ctx.Ctx.Gin = r
 	router.Bind(r, &ctx.Ctx)
-	err := r.Run(":" + ctx.Ctx.Config.App.Port)
-	if err != nil {
-		panic(err)
-	}
+	// 在goroutine中启动服务器，避免阻塞主线程
+	//initGin()函数中的r.Run()是阻塞调用，会阻止后续代码执行
+	go func() {
+		err := r.Run(":" + ctx.Ctx.Config.App.Port)
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	// 给服务器一点时间启动
+	time.Sleep(100 * time.Millisecond)
 }
 
 func initApiGin() {
@@ -102,8 +113,8 @@ func initApiGin() {
 }
 
 func initSync(c context.Context) {
-	sync.StartSync(c)
+	go sync.StartSync(c)
 }
 func initComputeIntegral() {
-	sync.InitComputeIntegral()
+	go sync.InitComputeIntegral()
 }
