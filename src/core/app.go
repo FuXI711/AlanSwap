@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/mumu/cryptoSwap/src/app/sync"
 	"github.com/mumu/cryptoSwap/src/core/chainclient"
@@ -38,12 +37,13 @@ func Start(configFile string, serverType int) {
 	if serverType == 1 {
 		initApiGin()
 	} else if serverType == 2 {
-		// 初始化Gin
-		initGin()
 		//开启线程获取scan log
 		initSync(c)
 		//计算积分
 		initComputeIntegral()
+		// 初始化Gin
+		initGin()
+
 	}
 }
 func initConfig(configFile string) {
@@ -89,17 +89,10 @@ func initGin() {
 	r := router.InitRouter()
 	ctx.Ctx.Gin = r
 	router.Bind(r, &ctx.Ctx)
-	// 在goroutine中启动服务器，避免阻塞主线程
-	//initGin()函数中的r.Run()是阻塞调用，会阻止后续代码执行
-	go func() {
-		err := r.Run(":" + ctx.Ctx.Config.App.Port)
-		if err != nil {
-			panic(err)
-		}
-	}()
-
-	// 给服务器一点时间启动
-	time.Sleep(100 * time.Millisecond)
+	err := r.Run(":" + ctx.Ctx.Config.App.Port)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func initApiGin() {
