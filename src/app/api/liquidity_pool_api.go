@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
@@ -525,6 +526,79 @@ func (lp *LiquidityPoolApi) GetPoolPerformance(c *gin.Context) {
 		items = append(items, dto.PoolPerformanceItemDTO{PoolPair: pair, Volume24h: formatUSD(vol)})
 	}
 	result.OK(c, gin.H{"poolPerformance": items})
+}
+
+// GetRewardDistribution 流动性收益分布
+func (lp *LiquidityPoolApi) GetRewardDistribution(c *gin.Context) {
+	// 优先从token解析地址
+	addrFromToken, _ := c.Get("address")
+	var walletAddress string
+	if s, ok := addrFromToken.(string); ok && validateHexAddress(s) {
+		walletAddress = s
+	}
+	if walletAddress == "" {
+		walletAddress = c.Query("walletAddress")
+	}
+	if !validateHexAddress(walletAddress) {
+		result.Error(c, result.InvalidParameter)
+		return
+	}
+
+	// 查询该用户涉及的池子
+	addrs, err := lp.svc.ListUserPoolAddresses(walletAddress, 0)
+	if err != nil {
+		result.Error(c, result.DBQueryFailed)
+		return
+	}
+	if len(addrs) == 0 {
+		result.OK(c, gin.H{"rewardDistribution": []dto.RewardDistributionItemDTO{}})
+		return
+	}
+
+	pools, err := lp.svc.ListActivePoolsByAddresses(addrs, 0)
+	if err != nil {
+		result.Error(c, result.DBQueryFailed)
+		return
+	}
+
+	// 计算每个池子的“累计收益”与近7天增长率（近7天与前7天对比）
+	now := time.Now()
+	last7Start := now.Add(-7 * 24 * time.Hour)
+	prev7Start := now.Add(-14 * 24 * time.Hour)
+
+	items := make([]dto.RewardDistributionItemDTO, 0, len(pools))
+	for _, p := range pools {
+		// 以当前24h手续费近似累计收益的代表（如需历史累计，可后续扩充）
+		_, fees24h, _ := lp.svc.Compute24hStats(p)
+
+		// 近7天与前7天比较计算增长率
+		feesLast7 := lp.svc.ComputeFeesUSDForPeriod(p, last7Start, now)
+		feesPrev7 := lp.svc.ComputeFeesUSDForPeriod(p, prev7Start, last7Start)
+		var growth string
+		if feesPrev7 <= 0 && feesLast7 <= 0 {
+			growth = "0.0%"
+		} else if feesPrev7 <= 0 && feesLast7 > 0 {
+			growth = "+100.0%"
+		} else {
+			rate := ((feesLast7 - feesPrev7) / feesPrev7) * 100
+			// 保留一位小数并带符号
+			if rate >= 0 {
+				growth = fmt.Sprintf("+%.1f%%", rate)
+			} else {
+				growth = fmt.Sprintf("%.1f%%", rate)
+			}
+		}
+
+		pair := fmt.Sprintf("%s/%s", p.Token0Symbol, p.Token1Symbol)
+		items = append(items, dto.RewardDistributionItemDTO{
+			PoolPair:     pair,
+			RewardAmount: formatUSD(fees24h),
+			Icon:         "https://example.com",
+			GrowthRate:   growth,
+		})
+	}
+
+	result.OK(c, gin.H{"rewardDistribution": items})
 }
 
 // PostLiquidityPools 按照需求返回池子列表（支持 all/my），并计算 24hVolume、24hFees、APY

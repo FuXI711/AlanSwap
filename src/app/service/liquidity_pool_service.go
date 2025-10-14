@@ -169,6 +169,44 @@ func toFloatWithDecimals(v *big.Int, decimals int) float64 {
 	return f
 }
 
+// computeVolumeUSDForPeriod 计算任意时间段内的 USD 交易量（稳定币侧）
+func computeVolumeUSDForPeriod(pool model.LiquidityPool, start, end time.Time) float64 {
+	var events []model.LiquidityPoolEvent
+	if err := ctx.Ctx.DB.Model(&model.LiquidityPoolEvent{}).
+		Where("chain_id = ? AND pool_address = ? AND event_type = ? AND created_at >= ? AND created_at < ?",
+			pool.ChainId, pool.PoolAddress, "Swap", start, end).
+		Order("created_at DESC").
+		Find(&events).Error; err != nil {
+		return 0
+	}
+
+	var total float64
+	token0Stable := isStable(pool.Token0Symbol)
+	token1Stable := isStable(pool.Token1Symbol)
+
+	for _, e := range events {
+		a0in := parseBigInt(e.Amount0In)
+		a0out := parseBigInt(e.Amount0Out)
+		a1in := parseBigInt(e.Amount1In)
+		a1out := parseBigInt(e.Amount1Out)
+
+		if token0Stable {
+			vol0 := new(big.Int).Add(a0in, a0out)
+			total += toFloatWithDecimals(vol0, pool.Token0Decimals)
+		} else if token1Stable {
+			vol1 := new(big.Int).Add(a1in, a1out)
+			total += toFloatWithDecimals(vol1, pool.Token1Decimals)
+		}
+	}
+	return total
+}
+
+// ComputeFeesUSDForPeriod 计算任意时间段内的 USD 手续费
+func (s *LiquidityPoolService) ComputeFeesUSDForPeriod(pool model.LiquidityPool, start, end time.Time) float64 {
+	vol := computeVolumeUSDForPeriod(pool, start, end)
+	return vol * DefaultFeeRate
+}
+
 // compute24hVolumeUSD 仅在稳定币池中返回 USD 交易量，否则为 0
 func compute24hVolumeUSD(pool model.LiquidityPool) float64 {
 	since := time.Now().Add(-24 * time.Hour)

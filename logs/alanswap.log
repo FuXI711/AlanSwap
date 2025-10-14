@@ -226,3 +226,86 @@
 {"level":"info","time":"2025-10-11 15:15:13.939","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9387647,"to_block":9387648}
 {"level":"info","time":"2025-10-11 15:15:25.956","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9387647,"to_block":9387649}
 {"level":"info","time":"2025-10-11 15:15:37.938","line":"src\\app\\sync\\liquidity_pool_sync.go:92","msg":"开始监听流动性池事件","service":"alanswap","from_block":9387647,"to_block":9387650}
+{"level":"info","time":"2025-10-14 09:37:21.893","line":"src\\core\\app.go:59","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-14 09:37:21.893","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-14 09:37:21.913","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"info","time":"2025-10-14 09:37:21.920","line":"src\\core\\db\\redis.go:33","msg":"Redis connect success","service":"alanswap"}
+{"level":"info","time":"2025-10-14 09:37:21.921","line":"src\\core\\app.go:78","msg":"正在初始化链客户端","service":"alanswap","chain_id":11155111,"endpoint":"https://sepolia.infura.io/v3/96a918f215974f62b5db9a1907540819"}
+{"level":"info","time":"2025-10-14 09:37:21.921","line":"src\\core\\app.go:86","msg":"链客户端初始化成功","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-14 09:37:21.922","line":"src\\abi\\abi_manager.go:62","msg":"ABI加载成功","service":"alanswap","abiName":"UniswapV2Pair"}
+{"level":"info","time":"2025-10-14 09:37:21.922","line":"src\\abi\\abi_manager.go:62","msg":"ABI加载成功","service":"alanswap","abiName":"ERC20"}
+{"level":"info","time":"2025-10-14 09:37:21.923","line":"src\\abi\\abi_manager.go:62","msg":"ABI加载成功","service":"alanswap","abiName":"UniswapV2Factory"}
+{"level":"info","time":"2025-10-14 09:37:21.923","line":"src\\abi\\abi_manager.go:116","msg":"ABI管理器初始化完成","service":"alanswap"}
+{"level":"info","time":"2025-10-14 09:37:21.938","line":"src\\app\\sync\\sync.go:37","msg":"开始启动统一事件监听","service":"alanswap","chain_count":1}
+{"level":"info","time":"2025-10-14 09:37:21.938","line":"src\\app\\sync\\sync.go:51","msg":"启动统一事件监听","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-14 09:37:34.885","line":"src\\app\\sync\\sync.go:103","msg":"开始监听事件日志","service":"alanswap","from_block":9387650,"to_block":9388650,"contract_address":"0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74"}
+{"level":"info","time":"2025-10-14 09:37:35.595","line":"src\\app\\sync\\sync.go:176","msg":"解析流动性池事件成功","service":"alanswap","event_count":1}
+{"level":"info","time":"2025-10-14 09:37:46.166","line":"src\\app\\sync\\sync.go:103","msg":"开始监听事件日志","service":"alanswap","from_block":9388651,"to_block":9389651,"contract_address":"0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74"}
+{"level":"info","time":"2025-10-14 09:37:47.783","line":"src\\app\\sync\\sync.go:176","msg":"解析流动性池事件成功","service":"alanswap","event_count":3}
+{"level":"info","time":"2025-10-14 09:37:58.166","line":"src\\app\\sync\\sync.go:103","msg":"开始监听事件日志","service":"alanswap","from_block":9389652,"to_block":9390652,"contract_address":"0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74"}
+{"level":"info","time":"2025-10-14 09:37:59.305","line":"src\\app\\sync\\sync.go:176","msg":"解析流动性池事件成功","service":"alanswap","event_count":2}
+{"level":"info","time":"2025-10-14 09:40:26.445","line":"src\\core\\app.go:59","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-14 09:40:26.446","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-14 09:40:26.463","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"info","time":"2025-10-14 09:40:26.476","line":"src\\core\\db\\redis.go:33","msg":"Redis connect success","service":"alanswap"}
+{"level":"info","time":"2025-10-14 09:40:26.476","line":"src\\core\\app.go:78","msg":"正在初始化链客户端","service":"alanswap","chain_id":11155111,"endpoint":"https://sepolia.infura.io/v3/96a918f215974f62b5db9a1907540819"}
+{"level":"info","time":"2025-10-14 09:40:26.476","line":"src\\core\\app.go:86","msg":"链客户端初始化成功","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-14 09:40:26.477","line":"src\\abi\\abi_manager.go:62","msg":"ABI加载成功","service":"alanswap","abiName":"UniswapV2Pair"}
+{"level":"info","time":"2025-10-14 09:40:26.478","line":"src\\abi\\abi_manager.go:62","msg":"ABI加载成功","service":"alanswap","abiName":"ERC20"}
+{"level":"info","time":"2025-10-14 09:40:26.479","line":"src\\abi\\abi_manager.go:62","msg":"ABI加载成功","service":"alanswap","abiName":"UniswapV2Factory"}
+{"level":"info","time":"2025-10-14 09:40:26.479","line":"src\\abi\\abi_manager.go:116","msg":"ABI管理器初始化完成","service":"alanswap"}
+{"level":"info","time":"2025-10-14 09:40:26.481","line":"src\\app\\sync\\sync.go:37","msg":"开始启动统一事件监听","service":"alanswap","chain_count":1}
+{"level":"info","time":"2025-10-14 09:40:26.481","line":"src\\app\\sync\\sync.go:51","msg":"启动统一事件监听","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-14 09:40:39.425","line":"src\\app\\sync\\sync.go:103","msg":"开始监听事件日志","service":"alanswap","from_block":9390652,"to_block":9391652,"contract_address":"0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74"}
+{"level":"info","time":"2025-10-14 09:40:50.718","line":"src\\app\\sync\\sync.go:103","msg":"开始监听事件日志","service":"alanswap","from_block":9390652,"to_block":9391652,"contract_address":"0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74"}
+{"level":"info","time":"2025-10-14 09:41:02.712","line":"src\\app\\sync\\sync.go:103","msg":"开始监听事件日志","service":"alanswap","from_block":9390652,"to_block":9391652,"contract_address":"0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74"}
+{"level":"info","time":"2025-10-14 09:41:14.731","line":"src\\app\\sync\\sync.go:103","msg":"开始监听事件日志","service":"alanswap","from_block":9390652,"to_block":9391652,"contract_address":"0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74"}
+{"level":"info","time":"2025-10-14 09:41:26.731","line":"src\\app\\sync\\sync.go:103","msg":"开始监听事件日志","service":"alanswap","from_block":9390652,"to_block":9391652,"contract_address":"0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74"}
+{"level":"info","time":"2025-10-14 09:41:38.713","line":"src\\app\\sync\\sync.go:103","msg":"开始监听事件日志","service":"alanswap","from_block":9390652,"to_block":9391652,"contract_address":"0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74"}
+{"level":"info","time":"2025-10-14 09:41:50.713","line":"src\\app\\sync\\sync.go:103","msg":"开始监听事件日志","service":"alanswap","from_block":9390652,"to_block":9391652,"contract_address":"0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74"}
+{"level":"info","time":"2025-10-14 09:42:02.714","line":"src\\app\\sync\\sync.go:103","msg":"开始监听事件日志","service":"alanswap","from_block":9390652,"to_block":9391652,"contract_address":"0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74"}
+{"level":"info","time":"2025-10-14 09:42:33.756","line":"src\\core\\app.go:59","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-14 09:42:33.756","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-14 09:42:33.779","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"info","time":"2025-10-14 09:42:33.783","line":"src\\core\\db\\redis.go:33","msg":"Redis connect success","service":"alanswap"}
+{"level":"info","time":"2025-10-14 09:42:33.784","line":"src\\core\\app.go:78","msg":"正在初始化链客户端","service":"alanswap","chain_id":11155111,"endpoint":"https://sepolia.infura.io/v3/96a918f215974f62b5db9a1907540819"}
+{"level":"info","time":"2025-10-14 09:42:33.784","line":"src\\core\\app.go:86","msg":"链客户端初始化成功","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-14 09:42:33.786","line":"src\\abi\\abi_manager.go:62","msg":"ABI加载成功","service":"alanswap","abiName":"UniswapV2Pair"}
+{"level":"info","time":"2025-10-14 09:42:33.786","line":"src\\abi\\abi_manager.go:62","msg":"ABI加载成功","service":"alanswap","abiName":"ERC20"}
+{"level":"info","time":"2025-10-14 09:42:33.787","line":"src\\abi\\abi_manager.go:62","msg":"ABI加载成功","service":"alanswap","abiName":"UniswapV2Factory"}
+{"level":"info","time":"2025-10-14 09:42:33.787","line":"src\\abi\\abi_manager.go:116","msg":"ABI管理器初始化完成","service":"alanswap"}
+{"level":"info","time":"2025-10-14 09:42:33.791","line":"src\\app\\sync\\sync.go:37","msg":"开始启动统一事件监听","service":"alanswap","chain_count":1}
+{"level":"info","time":"2025-10-14 09:42:33.791","line":"src\\app\\sync\\sync.go:51","msg":"启动统一事件监听","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-14 09:42:46.673","line":"src\\app\\sync\\sync.go:103","msg":"开始监听事件日志","service":"alanswap","from_block":9386088,"to_block":9387088,"contract_address":"0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74"}
+{"level":"info","time":"2025-10-14 09:42:49.089","line":"src\\app\\sync\\sync.go:176","msg":"解析流动性池事件成功","service":"alanswap","event_count":5}
+{"level":"info","time":"2025-10-14 09:42:58.009","line":"src\\app\\sync\\sync.go:103","msg":"开始监听事件日志","service":"alanswap","from_block":9387089,"to_block":9388089,"contract_address":"0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74"}
+{"level":"info","time":"2025-10-14 09:42:59.956","line":"src\\app\\sync\\sync.go:176","msg":"解析流动性池事件成功","service":"alanswap","event_count":4}
+{"level":"info","time":"2025-10-14 09:43:10.013","line":"src\\app\\sync\\sync.go:103","msg":"开始监听事件日志","service":"alanswap","from_block":9388090,"to_block":9389090,"contract_address":"0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74"}
+{"level":"info","time":"2025-10-14 09:43:10.663","line":"src\\app\\sync\\sync.go:176","msg":"解析流动性池事件成功","service":"alanswap","event_count":1}
+{"level":"info","time":"2025-10-14 09:43:22.007","line":"src\\app\\sync\\sync.go:103","msg":"开始监听事件日志","service":"alanswap","from_block":9389091,"to_block":9390091,"contract_address":"0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74"}
+{"level":"info","time":"2025-10-14 09:43:23.096","line":"src\\app\\sync\\sync.go:176","msg":"解析流动性池事件成功","service":"alanswap","event_count":2}
+{"level":"info","time":"2025-10-14 09:43:34.014","line":"src\\app\\sync\\sync.go:103","msg":"开始监听事件日志","service":"alanswap","from_block":9390092,"to_block":9391092,"contract_address":"0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74"}
+{"level":"info","time":"2025-10-14 09:43:35.109","line":"src\\app\\sync\\sync.go:176","msg":"解析流动性池事件成功","service":"alanswap","event_count":2}
+{"level":"info","time":"2025-10-14 09:43:46.011","line":"src\\app\\sync\\sync.go:103","msg":"开始监听事件日志","service":"alanswap","from_block":9391093,"to_block":9392093,"contract_address":"0x72e46e15ef83c896de44B1874B4AF7dDAB5b4F74"}
+{"level":"info","time":"2025-10-14 12:55:23.674","line":"src\\core\\app.go:59","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-14 12:55:23.674","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-14 12:55:23.703","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"info","time":"2025-10-14 12:55:23.718","line":"src\\core\\db\\redis.go:33","msg":"Redis connect success","service":"alanswap"}
+{"level":"info","time":"2025-10-14 12:55:23.718","line":"src\\core\\app.go:78","msg":"正在初始化链客户端","service":"alanswap","chain_id":11155111,"endpoint":"https://sepolia.infura.io/v3/96a918f215974f62b5db9a1907540819"}
+{"level":"info","time":"2025-10-14 12:55:23.718","line":"src\\core\\app.go:86","msg":"链客户端初始化成功","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-14 12:55:23.719","line":"src\\abi\\abi_manager.go:62","msg":"ABI加载成功","service":"alanswap","abiName":"UniswapV2Pair"}
+{"level":"info","time":"2025-10-14 12:55:23.719","line":"src\\abi\\abi_manager.go:62","msg":"ABI加载成功","service":"alanswap","abiName":"ERC20"}
+{"level":"info","time":"2025-10-14 12:55:23.719","line":"src\\abi\\abi_manager.go:62","msg":"ABI加载成功","service":"alanswap","abiName":"UniswapV2Factory"}
+{"level":"info","time":"2025-10-14 12:55:23.719","line":"src\\abi\\abi_manager.go:116","msg":"ABI管理器初始化完成","service":"alanswap"}
+{"level":"info","time":"2025-10-14 12:57:15.215","line":"src\\core\\gin\\middleware\\http_log.go:79","msg":"Go-End","service":"alanswap","status":500,"method":"GET","function":"github.com/mumu/cryptoSwap/src/app/api.(*LiquidityPoolApi).GetLiquidityStats-fm","path":"/api/v1/liquidity/stats","query":"userAddress=0xeE567Fe1712Faf6149d80dA1E6934E354124CfE3&chainId=11155111&period=24h","ip":"::1","user-agent":"PostmanRuntime/7.44.1","token":"","content-type":"","latency":24,"request":"","response":"{\"error\":\"ERROR: function curdate() does not exist (SQLSTATE 42883)\"}"}
+{"level":"info","time":"2025-10-14 12:59:38.592","line":"src\\core\\app.go:59","msg":"init pprof","service":"alanswap"}
+{"level":"info","time":"2025-10-14 12:59:38.593","line":"src\\core\\db\\pgsql.go:14","msg":"Init Pgsql","service":"alanswap"}
+{"level":"info","time":"2025-10-14 12:59:38.616","line":"src\\core\\db\\redis.go:18","msg":"Init Redis","service":"alanswap"}
+{"level":"info","time":"2025-10-14 12:59:38.622","line":"src\\core\\db\\redis.go:33","msg":"Redis connect success","service":"alanswap"}
+{"level":"info","time":"2025-10-14 12:59:38.622","line":"src\\core\\app.go:78","msg":"正在初始化链客户端","service":"alanswap","chain_id":11155111,"endpoint":"https://sepolia.infura.io/v3/96a918f215974f62b5db9a1907540819"}
+{"level":"info","time":"2025-10-14 12:59:38.623","line":"src\\core\\app.go:86","msg":"链客户端初始化成功","service":"alanswap","chain_id":11155111}
+{"level":"info","time":"2025-10-14 12:59:38.624","line":"src\\abi\\abi_manager.go:62","msg":"ABI加载成功","service":"alanswap","abiName":"UniswapV2Pair"}
+{"level":"info","time":"2025-10-14 12:59:38.625","line":"src\\abi\\abi_manager.go:62","msg":"ABI加载成功","service":"alanswap","abiName":"ERC20"}
+{"level":"info","time":"2025-10-14 12:59:38.625","line":"src\\abi\\abi_manager.go:62","msg":"ABI加载成功","service":"alanswap","abiName":"UniswapV2Factory"}
+{"level":"info","time":"2025-10-14 12:59:38.625","line":"src\\abi\\abi_manager.go:116","msg":"ABI管理器初始化完成","service":"alanswap"}
+{"level":"info","time":"2025-10-14 13:00:31.964","line":"src\\core\\gin\\middleware\\http_log.go:79","msg":"Go-End","service":"alanswap","status":200,"method":"GET","function":"github.com/mumu/cryptoSwap/src/app/api.(*LiquidityPoolApi).GetLiquidityStats-fm","path":"/api/v1/liquidity/stats","query":"userAddress=0xeE567Fe1712Faf6149d80dA1E6934E354124CfE3&chainId=11155111&period=24h","ip":"::1","user-agent":"PostmanRuntime/7.44.1","token":"","content-type":"","latency":23,"request":"","response":"{\"myLiquidityValue\":\"$79704584.24\",\"myLiquidityPeriodChange\":\"+0.0%\",\"totalFees\":\"$876554321542221.75\",\"totalFeesTodayChange\":\"+$53104679.24\",\"activePoolsCount\":1,\"totalPoolsCount\":1}"}
