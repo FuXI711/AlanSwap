@@ -76,15 +76,15 @@ func ApiBind(r *gin.Engine, ctx *ctx.Context) {
 	author.GET("/airdrop/overview", airDropApi.Overview)
 
 	liquidityPoolApi := api.NewLiquidityPoolApi()
-	// 2.新增：POST 版本的池子列表（支持 all/my 和统计字段）
-	v.POST("/liquidity/pools", liquidityPoolApi.PostLiquidityPools)
-	// 4.新增：GET 池子表现（按用户地址返回 poolPair 与 24hVolume）
-	v.GET("/liquidity/poolPerformance", liquidityPoolApi.GetPoolPerformance)
-	// 3.新增：GET 流动性收益分布
-	v.GET("/liquidity/rewardDistribution", liquidityPoolApi.GetRewardDistribution)
-	//5.获取流动性池事件列表
-	v.GET("/liquidity-pool-events", liquidityPoolApi.GetLiquidityPoolEvents)
 	//1.新增：获取流动性池统计数据
 	v.GET("/liquidity/stats", liquidityPoolApi.GetLiquidityStats)
+	// 2.新增：POST 版本的池子列表（支持 all/my 和统计字段）
+	v.POST("/liquidity/pools", liquidityPoolApi.PostLiquidityPools)
+	// 3.新增：GET 流动性收益分布
+	v.GET("/liquidity/rewardDistribution", liquidityPoolApi.GetRewardDistribution)
+	// 4.新增：GET 池子表现（按用户地址返回 poolPair 与 24hVolume）
+	v.GET("/liquidity/poolPerformance", liquidityPoolApi.GetPoolPerformance)
+	//5.获取流动性池事件列表
+	v.GET("/liquidity-pool-events", liquidityPoolApi.GetLiquidityPoolEvents)
 
 }
