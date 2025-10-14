@@ -103,3 +103,15 @@ func (am *ABIManager) PreloadCommonABIs() error {
 
 	return nil
 }
+
+// InitABIManager 初始化ABI管理器
+func InitABIManager() {
+	manager := GetABIManager()
+
+	// 预加载常用ABI
+	if err := manager.PreloadCommonABIs(); err != nil {
+		log.Logger.Warn("预加载常用ABI时出现错误", zap.Error(err))
+	}
+
+	log.Logger.Info("ABI管理器初始化完成")
+}

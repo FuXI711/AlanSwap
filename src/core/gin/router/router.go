@@ -77,7 +77,7 @@ func ApiBind(r *gin.Engine, ctx *ctx.Context) {
 
 	// 流动性池相关接口
 	// 不需要验证的接口
-	v.GET("/liquidity-pools", api.GetLiquidityPools)
+	v.GET("/liquidity/pools", api.GetLiquidityPools)
 	v.GET("/liquidity-pool-events", api.GetLiquidityPoolEvents)
 	v.GET("/liquidity-pool-stats", api.GetLiquidityPoolStats)
 

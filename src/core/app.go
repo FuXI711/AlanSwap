@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/mumu/cryptoSwap/src/abi"
 	"github.com/mumu/cryptoSwap/src/app/sync"
 	"github.com/mumu/cryptoSwap/src/core/chainclient"
 	"github.com/mumu/cryptoSwap/src/core/config"
@@ -33,7 +34,8 @@ func Start(configFile string, serverType int) {
 	initDB()
 	// 初始化区块链客户端
 	initChainClient()
-
+	// 初始化ABI管理器
+	abi.InitABIManager()
 	if serverType == 1 {
 		initApiGin()
 	} else if serverType == 2 {
@@ -46,6 +48,7 @@ func Start(configFile string, serverType int) {
 
 	}
 }
+
 func initConfig(configFile string) {
 	ctx.Ctx.Config = config.InitConfig(configFile)
 }
