@@ -3,16 +3,16 @@ package api
 import (
 	"context"
 	"fmt"
-	"math"
 	"math/big"
+	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
 	"github.com/mumu/cryptoSwap/src/abi" // 添加abi包导入
+	"github.com/mumu/cryptoSwap/src/app/api/dto"
 	"github.com/mumu/cryptoSwap/src/app/model"
 	"github.com/mumu/cryptoSwap/src/app/service"
 	"github.com/mumu/cryptoSwap/src/core/ctx"
@@ -29,6 +29,34 @@ func NewLiquidityPoolApi() *LiquidityPoolApi {
 	return &LiquidityPoolApi{
 		svc: service.NewLiquidityPoolService(),
 	}
+}
+
+// --- 通用 API 辅助 ---
+func parseChainId(chainIdStr string) (int64, bool) {
+	if chainIdStr == "" {
+		return 0, true
+	}
+	id, err := strconv.ParseInt(chainIdStr, 10, 64)
+	if err != nil {
+		return 0, false
+	}
+	return id, true
+}
+
+func parsePagination(pageStr, pageSizeStr string) dto.Pagination {
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		page = 1
+	}
+	pageSize, err := strconv.Atoi(pageSizeStr)
+	if err != nil || pageSize < 1 || pageSize > 100 {
+		pageSize = 20
+	}
+	return dto.Pagination{Page: page, PageSize: pageSize, Offset: (page - 1) * pageSize}
+}
+
+func validateHexAddress(addr string) bool {
+	return addr != "" && common.IsHexAddress(addr)
 }
 
 // GetRPCURL 根据chainId获取RPC端点
@@ -265,40 +293,20 @@ func GetUserLiquidityPools(c *gin.Context) {
 	pageStr := c.DefaultQuery("page", "1")
 	pageSizeStr := c.DefaultQuery("pageSize", "20")
 
-	if userAddress == "" {
+	if !validateHexAddress(userAddress) {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
-
-	chainId, err := strconv.ParseInt(chainIdStr, 10, 64)
-	if err != nil && chainIdStr != "" {
+	chainId, ok := parseChainId(chainIdStr)
+	if !ok {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
-
-	page, err := strconv.Atoi(pageStr)
-	if err != nil || page < 1 {
-		page = 1
-	}
-
-	pageSize, err := strconv.Atoi(pageSizeStr)
-	if err != nil || pageSize < 1 || pageSize > 100 {
-		pageSize = 20
-	}
-
-	offset := (page - 1) * pageSize
+	pg := parsePagination(pageStr, pageSizeStr)
 
 	// 查询用户参与过的流动性池地址（去重）
-	var poolAddresses []string
-	subQuery := ctx.Ctx.DB.Model(&model.LiquidityPoolEvent{}).
-		Select("DISTINCT pool_address").
-		Where("user_address = ?", userAddress)
-
-	if chainId > 0 {
-		subQuery = subQuery.Where("chain_id = ?", chainId)
-	}
-
-	if err := subQuery.Pluck("pool_address", &poolAddresses).Error; err != nil {
+	poolAddresses, err := service.NewLiquidityPoolService().ListUserPoolAddresses(userAddress, chainId)
+	if err != nil {
 		result.Error(c, result.DBQueryFailed)
 		return
 	}
@@ -307,29 +315,15 @@ func GetUserLiquidityPools(c *gin.Context) {
 		result.OK(c, gin.H{
 			"pools":    []model.LiquidityPool{},
 			"total":    0,
-			"page":     page,
-			"pageSize": pageSize,
+			"page":     pg.Page,
+			"pageSize": pg.PageSize,
 		})
 		return
 	}
 
 	// 根据池子地址查询完整的流动性池信息
-	var pools []model.LiquidityPool
-	var total int64
-
-	query := ctx.Ctx.DB.Model(&model.LiquidityPool{}).
-		Where("pool_address IN (?) AND is_active = ?", poolAddresses, true)
-
-	if chainId > 0 {
-		query = query.Where("chain_id = ?", chainId)
-	}
-
-	if err := query.Count(&total).Error; err != nil {
-		result.Error(c, result.DBQueryFailed)
-		return
-	}
-
-	if err := query.Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&pools).Error; err != nil {
+	pools, total, err := service.NewLiquidityPoolService().ListActivePoolsByAddressesPaged(poolAddresses, chainId, pg.Offset, pg.PageSize)
+	if err != nil {
 		result.Error(c, result.DBQueryFailed)
 		return
 	}
@@ -337,8 +331,8 @@ func GetUserLiquidityPools(c *gin.Context) {
 	result.OK(c, gin.H{
 		"pools":    pools,
 		"total":    total,
-		"page":     page,
-		"pageSize": pageSize,
+		"page":     pg.Page,
+		"pageSize": pg.PageSize,
 	})
 }
 
@@ -348,38 +342,15 @@ func GetLiquidityPools(c *gin.Context) {
 	pageStr := c.DefaultQuery("page", "1")
 	pageSizeStr := c.DefaultQuery("pageSize", "20")
 
-	chainId, err := strconv.ParseInt(chainIdStr, 10, 64)
-	if err != nil {
+	chainId, ok := parseChainId(chainIdStr)
+	if !ok {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
+	pg := parsePagination(pageStr, pageSizeStr)
 
-	page, err := strconv.Atoi(pageStr)
-	if err != nil || page < 1 {
-		page = 1
-	}
-
-	pageSize, err := strconv.Atoi(pageSizeStr)
-	if err != nil || pageSize < 1 || pageSize > 100 {
-		pageSize = 20
-	}
-
-	offset := (page - 1) * pageSize
-
-	var pools []model.LiquidityPool
-	var total int64
-
-	query := ctx.Ctx.DB.Model(&model.LiquidityPool{}).Where("is_active = ?", true)
-	if chainId > 0 {
-		query = query.Where("chain_id = ?", chainId)
-	}
-
-	if err := query.Count(&total).Error; err != nil {
-		result.Error(c, result.DBQueryFailed)
-		return
-	}
-
-	if err := query.Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&pools).Error; err != nil {
+	pools, total, err := service.NewLiquidityPoolService().ListActivePools(chainId, pg.Offset, pg.PageSize)
+	if err != nil {
 		result.Error(c, result.DBQueryFailed)
 		return
 	}
@@ -387,8 +358,8 @@ func GetLiquidityPools(c *gin.Context) {
 	result.OK(c, gin.H{
 		"pools":    pools,
 		"total":    total,
-		"page":     page,
-		"pageSize": pageSize,
+		"page":     pg.Page,
+		"pageSize": pg.PageSize,
 	})
 }
 
@@ -401,23 +372,12 @@ func (lp *LiquidityPoolApi) GetLiquidityPoolEvents(c *gin.Context) {
 	pageStr := c.DefaultQuery("page", "1")
 	pageSizeStr := c.DefaultQuery("pageSize", "20")
 
-	chainId, err := strconv.ParseInt(chainIdStr, 10, 64)
-	if err != nil && chainIdStr != "" {
+	chainId, ok := parseChainId(chainIdStr)
+	if !ok {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
-
-	page, err := strconv.Atoi(pageStr)
-	if err != nil || page < 1 {
-		page = 1
-	}
-
-	pageSize, err := strconv.Atoi(pageSizeStr)
-	if err != nil || pageSize < 1 || pageSize > 100 {
-		pageSize = 20
-	}
-
-	offset := (page - 1) * pageSize
+	pg := parsePagination(pageStr, pageSizeStr)
 
 	var events []model.LiquidityPoolEvent
 	var total int64
@@ -442,7 +402,7 @@ func (lp *LiquidityPoolApi) GetLiquidityPoolEvents(c *gin.Context) {
 		return
 	}
 
-	if err := query.Offset(offset).Limit(pageSize).Order("created_at DESC").Find(&events).Error; err != nil {
+	if err := query.Offset(pg.Offset).Limit(pg.PageSize).Order("created_at DESC").Find(&events).Error; err != nil {
 		result.Error(c, result.DBQueryFailed)
 		return
 	}
@@ -450,9 +410,39 @@ func (lp *LiquidityPoolApi) GetLiquidityPoolEvents(c *gin.Context) {
 	result.OK(c, gin.H{
 		"events":   events,
 		"total":    total,
-		"page":     page,
-		"pageSize": pageSize,
+		"page":     pg.Page,
+		"pageSize": pg.PageSize,
 	})
+}
+
+// GetLiquidityStats 处理流动性统计请求
+func (lp *LiquidityPoolApi) GetLiquidityStats(c *gin.Context) {
+	// 绑定请求参数
+	var req model.LiquidityStatsRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// 参数验证
+	if req.UserAddress == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "用户地址不能为空"})
+		return
+	}
+
+	// 初始化服务
+
+	service := service.NewLiquidityPoolService()
+
+	// 获取统计数据
+	stats, err := service.GetLiquidityStats(&req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// 返回响应
+	c.JSON(http.StatusOK, stats)
 }
 
 // GetLiquidityPoolStats 获取流动性池统计信息
@@ -494,7 +484,7 @@ func (lp *LiquidityPoolApi) GetLiquidityPoolStats(c *gin.Context) {
 
 	// 查询今日事件数
 	var todayEvents int64
-	if err := eventQuery.Where("DATE(created_at) = CURDATE()").Count(&todayEvents).Error; err != nil {
+	if err := eventQuery.Where("created_at::date = CURRENT_DATE").Count(&todayEvents).Error; err != nil {
 		result.Error(c, result.DBQueryFailed)
 		return
 	}
@@ -508,53 +498,33 @@ func (lp *LiquidityPoolApi) GetLiquidityPoolStats(c *gin.Context) {
 // GetPoolPerformance 返回用户相关池子的 24 小时交易量表现
 func (lp *LiquidityPoolApi) GetPoolPerformance(c *gin.Context) {
 	walletAddress := c.Query("walletAddress")
-	if walletAddress == "" {
+	if !validateHexAddress(walletAddress) {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
 
-	// 查询用户参与过的流动性池地址（按事件记录去重）
-	var poolAddresses []string
-	subQuery := ctx.Ctx.DB.Model(&model.LiquidityPoolEvent{}).
-		Select("DISTINCT pool_address").
-		Where("user_address = ?", walletAddress)
-	if err := subQuery.Pluck("pool_address", &poolAddresses).Error; err != nil {
+	addrs, err := lp.svc.ListUserPoolAddresses(walletAddress, 0)
+	if err != nil {
 		result.Error(c, result.DBQueryFailed)
 		return
 	}
-
-	// 如果没有记录，直接返回空列表
-	if len(poolAddresses) == 0 {
-		result.OK(c, gin.H{
-			"poolPerformance": []gin.H{},
-		})
+	if len(addrs) == 0 {
+		result.OK(c, gin.H{"poolPerformance": []dto.PoolPerformanceItemDTO{}})
 		return
 	}
 
-	// 查询这些池子的基础信息
-	var pools []model.LiquidityPool
-	if err := ctx.Ctx.DB.Model(&model.LiquidityPool{}).
-		Where("pool_address IN (?) AND is_active = ?", poolAddresses, true).
-		Order("created_at DESC").
-		Find(&pools).Error; err != nil {
+	pools, err := lp.svc.ListActivePoolsByAddresses(addrs, 0)
+	if err != nil {
 		result.Error(c, result.DBQueryFailed)
 		return
 	}
-
-	// 组装返回数据：poolPair 与 24hVolume（美元格式化）
-	items := make([]gin.H, 0, len(pools))
+	items := make([]dto.PoolPerformanceItemDTO, 0, len(pools))
 	for _, p := range pools {
-		volUSD := compute24hVolumeUSD(p)
+		vol, _, _ := lp.svc.Compute24hStats(p)
 		pair := fmt.Sprintf("%s/%s", p.Token0Symbol, p.Token1Symbol)
-		items = append(items, gin.H{
-			"poolPair":  pair,
-			"24hVolume": formatUSD(volUSD),
-		})
+		items = append(items, dto.PoolPerformanceItemDTO{PoolPair: pair, Volume24h: formatUSD(vol)})
 	}
-
-	result.OK(c, gin.H{
-		"poolPerformance": items,
-	})
+	result.OK(c, gin.H{"poolPerformance": items})
 }
 
 // PostLiquidityPools 按照需求返回池子列表（支持 all/my），并计算 24hVolume、24hFees、APY
@@ -588,64 +558,37 @@ func (lp *LiquidityPoolApi) PostLiquidityPools(c *gin.Context) {
 	var total int64
 
 	if req.PoolType == "my" {
-		// 查询用户参与过的流动性池地址（去重）
-		var poolAddresses []string
-		subQuery := ctx.Ctx.DB.Model(&model.LiquidityPoolEvent{}).
-			Select("DISTINCT pool_address").
-			Where("user_address = ?", req.WalletAddress)
-
-		if err := subQuery.Pluck("pool_address", &poolAddresses).Error; err != nil {
+		addrs, err := lp.svc.ListUserPoolAddresses(req.WalletAddress, 0)
+		if err != nil {
 			result.Error(c, result.DBQueryFailed)
 			return
 		}
-
-		if len(poolAddresses) == 0 {
-			result.OK(c, gin.H{
-				"total": 0,
-				"list":  []gin.H{},
-			})
-			return
-		}
-
-		query := ctx.Ctx.DB.Model(&model.LiquidityPool{}).
-			Where("pool_address IN (?) AND is_active = ?", poolAddresses, true)
-
-		if err := query.Count(&total).Error; err != nil {
-			result.Error(c, result.DBQueryFailed)
-			return
-		}
-		if err := query.Offset(offset).Limit(req.PageSize).Order("created_at DESC").Find(&pools).Error; err != nil {
+		pools, total, err = lp.svc.ListActivePoolsByAddressesPaged(addrs, 0, offset, req.PageSize)
+		if err != nil {
 			result.Error(c, result.DBQueryFailed)
 			return
 		}
 	} else {
-		// all：查询所有活跃池子
-		query := ctx.Ctx.DB.Model(&model.LiquidityPool{}).Where("is_active = ?", true)
-		if err := query.Count(&total).Error; err != nil {
-			result.Error(c, result.DBQueryFailed)
-			return
-		}
-		if err := query.Offset(offset).Limit(req.PageSize).Order("created_at DESC").Find(&pools).Error; err != nil {
+		_, _, err := lp.svc.ListActivePools(0, offset, req.PageSize)
+		if err != nil {
 			result.Error(c, result.DBQueryFailed)
 			return
 		}
 	}
 
 	// 组装返回并计算统计
-	items := make([]gin.H, 0, len(pools))
+	items := make([]dto.PoolListItemDTO, 0, len(pools))
 	for _, p := range pools {
-		volUSD := compute24hVolumeUSD(p)
-		feesUSD := volUSD * 0.003 // 默认手续费率 0.3%
-		apy := computeAPY(p, feesUSD)
+		volUSD, feesUSD, apy := lp.svc.Compute24hStats(p)
 
 		name := fmt.Sprintf("%s/%s", p.Token0Symbol, p.Token1Symbol)
-		items = append(items, gin.H{
-			"poolId":    fmt.Sprintf("%d", p.Id),
-			"poolName":  name,
-			"icon":      "https://example.com", // 可后续替换为真实图标地址
-			"apy":       apy,
-			"24hVolume": formatUSD(volUSD),
-			"24hFees":   formatUSD(feesUSD),
+		items = append(items, dto.PoolListItemDTO{
+			PoolId:    fmt.Sprintf("%d", p.Id),
+			PoolName:  name,
+			Icon:      "https://example.com",
+			APY:       apy,
+			Volume24h: formatUSD(volUSD),
+			Fees24h:   formatUSD(feesUSD),
 		})
 	}
 
@@ -675,67 +618,6 @@ func parseBigInt(s string) *big.Int {
 	return v
 }
 
-func toFloatWithDecimals(v *big.Int, decimals int) float64 {
-	if v == nil {
-		return 0
-	}
-	// v / 10^decimals
-	f, _ := new(big.Rat).SetFrac(v, new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil)).Float64()
-	return f
-}
-
-// compute24hVolumeUSD 仅在稳定币池中返回 USD 交易量，否则为 0
-func compute24hVolumeUSD(pool model.LiquidityPool) float64 {
-	since := time.Now().Add(-24 * time.Hour)
-	var events []model.LiquidityPoolEvent
-	if err := ctx.Ctx.DB.Model(&model.LiquidityPoolEvent{}).
-		Where("chain_id = ? AND pool_address = ? AND event_type = ? AND created_at >= ?",
-			pool.ChainId, pool.PoolAddress, "Swap", since).
-		Order("created_at DESC").
-		Find(&events).Error; err != nil {
-		return 0
-	}
-
-	var total float64
-	token0Stable := isStable(pool.Token0Symbol)
-	token1Stable := isStable(pool.Token1Symbol)
-
-	for _, e := range events {
-		a0in := parseBigInt(e.Amount0In)
-		a0out := parseBigInt(e.Amount0Out)
-		a1in := parseBigInt(e.Amount1In)
-		a1out := parseBigInt(e.Amount1Out)
-
-		if token0Stable {
-			vol0 := new(big.Int).Add(a0in, a0out)
-			total += toFloatWithDecimals(vol0, pool.Token0Decimals)
-		} else if token1Stable {
-			vol1 := new(big.Int).Add(a1in, a1out)
-			total += toFloatWithDecimals(vol1, pool.Token1Decimals)
-		}
-	}
-	return total
-}
-
-// computeAPY 基于稳定币侧的 TVL 估算 APY
-func computeAPY(pool model.LiquidityPool, feesUSD24h float64) string {
-	var tvlUSD float64
-	if isStable(pool.Token0Symbol) {
-		tvlUSD = 2 * toFloatWithDecimals(parseBigInt(pool.Reserve0), pool.Token0Decimals)
-	} else if isStable(pool.Token1Symbol) {
-		tvlUSD = 2 * toFloatWithDecimals(parseBigInt(pool.Reserve1), pool.Token1Decimals)
-	}
-
-	if tvlUSD <= 0 {
-		return "-"
-	}
-	apy := (feesUSD24h / tvlUSD) * 365 * 100
-	if math.IsNaN(apy) || math.IsInf(apy, 0) {
-		return "-"
-	}
-	return fmt.Sprintf("%.1f%%", apy)
-}
-
 func formatUSD(v float64) string {
 	if v <= 0 {
 		return "$0"
@@ -751,4 +633,47 @@ func formatUSD(v float64) string {
 		return fmt.Sprintf("$%.1fK", v/1_000)
 	}
 	return fmt.Sprintf("$%.2f", v)
+}
+
+// --- helpers to reduce duplication ---
+// getUserPoolAddresses 根据用户地址（可选链ID）查询其涉及的去重池子地址
+func getUserPoolAddresses(userAddress string, chainIdOpt int64) ([]string, error) {
+	var poolAddresses []string
+	subQuery := ctx.Ctx.DB.Model(&model.LiquidityPoolEvent{}).
+		Select("DISTINCT pool_address").
+		Where("user_address = ?", userAddress)
+	if chainIdOpt > 0 {
+		subQuery = subQuery.Where("chain_id = ?", chainIdOpt)
+	}
+	if err := subQuery.Pluck("pool_address", &poolAddresses).Error; err != nil {
+		return nil, err
+	}
+	return poolAddresses, nil
+}
+
+// listActivePoolsByAddresses 根据地址列表（可选链ID）查询活跃池子
+func listActivePoolsByAddresses(addresses []string, chainIdOpt int64) ([]model.LiquidityPool, error) {
+	var pools []model.LiquidityPool
+	if len(addresses) == 0 {
+		return pools, nil
+	}
+	query := ctx.Ctx.DB.Model(&model.LiquidityPool{}).
+		Where("pool_address IN (?) AND is_active = ?", addresses, true)
+	if chainIdOpt > 0 {
+		query = query.Where("chain_id = ?", chainIdOpt)
+	}
+	if err := query.Order("created_at DESC").Find(&pools).Error; err != nil {
+		return nil, err
+	}
+	return pools, nil
+}
+
+// makePairAndVolumeItem 将池子格式化为包含交易对与24小时交易量的条目
+func makePairAndVolumeItem(p model.LiquidityPool, svc *service.LiquidityPoolService) gin.H {
+	volUSD, _, _ := svc.Compute24hStats(p)
+	pair := fmt.Sprintf("%s/%s", p.Token0Symbol, p.Token1Symbol)
+	return gin.H{
+		"poolPair":  pair,
+		"24hVolume": formatUSD(volUSD),
+	}
 }

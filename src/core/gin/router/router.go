@@ -82,7 +82,6 @@ func ApiBind(r *gin.Engine, ctx *ctx.Context) {
 	v.GET("/liquidity/poolPerformance", liquidityPoolApi.GetPoolPerformance)
 	//获取流动性池事件列表
 	v.GET("/liquidity-pool-events", liquidityPoolApi.GetLiquidityPoolEvents)
-	liquidityStatsApi := api.NewLiquidityStatsApi()
 	//新增：获取流动性池统计数据
-	v.GET("/liquidity/stats", liquidityStatsApi.GetLiquidityStats)
+	v.GET("/liquidity/stats", liquidityPoolApi.GetLiquidityStats)
 }
