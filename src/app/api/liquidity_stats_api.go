@@ -8,8 +8,18 @@ import (
 	"github.com/mumu/cryptoSwap/src/app/service"
 )
 
+type LiquidityStatsApi struct {
+	svc *service.LiquidityStatsService
+}
+
+func NewLiquidityStatsApi() *LiquidityStatsApi {
+	return &LiquidityStatsApi{
+		svc: service.NewLiquidityStatsService(),
+	}
+}
+
 // GetLiquidityStats 处理流动性统计请求
-func GetLiquidityStats(c *gin.Context) {
+func (api *LiquidityStatsApi) GetLiquidityStats(c *gin.Context) {
 	// 绑定请求参数
 	var req model.LiquidityStatsRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
