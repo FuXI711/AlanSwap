@@ -3,7 +3,6 @@ package sync
 import (
 	"fmt"
 	"math/big"
-	"time"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -13,7 +12,6 @@ import (
 	"github.com/mumu/cryptoSwap/src/abi"
 	"github.com/mumu/cryptoSwap/src/app/api"
 	"github.com/mumu/cryptoSwap/src/app/model"
-	"github.com/mumu/cryptoSwap/src/app/service"
 	"github.com/mumu/cryptoSwap/src/core/ctx"
 	"github.com/mumu/cryptoSwap/src/core/log"
 	"go.uber.org/zap"
@@ -99,25 +97,16 @@ func getPoolTokenAddressesFromContract(poolAddress string, chainId int) (string,
 
 // getPoolTokenAddresses 获取池子的代币地址（优先从数据库获取，失败则从合约获取）
 func getPoolTokenAddresses(poolAddress string, chainId int) (string, string) {
-	//var pool model.LiquidityPool
-	// 先尝试从缓存获取
-	//if cached, ok := tokenCache.Get(poolAddress); ok {
-	//	return cached.([]string)[0], cached.([]string)[1]
-	//}
+	var pool model.LiquidityPool
+	err := ctx.Ctx.DB.Where("pool_address = ? AND chain_id = ?", poolAddress, chainId).First(&pool).Error
+	if err != nil {
+		log.Logger.Warn("查询流动性池代币地址失败，尝试从合约获取",
+			zap.String("pool_address", poolAddress),
+			zap.Int("chain_id", chainId),
+			zap.Error(err))
 
-	// 带锁查询数据库
-	var result struct {
-		Token0 string
-		Token1 string
-	}
-	ctx.Ctx.DB.Table("liquidity_pools").
-		Select("token0_address, token1_address").
-		Where("pool_address = ? AND chain_id = ?", poolAddress, chainId).
-		Scan(&result)
-
-	// 首次发现池子时实时获取并预写入
-	if result.Token0 == "" || result.Token0 == "0x0000000000000000000000000000000000000000" {
-		token0, token1, err := getPoolTokenAddressesFromContract(poolAddress, chainId)
+		// 从合约获取代币地址
+		token0Address, token1Address, err := getPoolTokenAddressesFromContract(poolAddress, chainId)
 		if err != nil {
 			log.Logger.Error("从合约获取代币地址失败",
 				zap.String("pool_address", poolAddress),
@@ -126,11 +115,46 @@ func getPoolTokenAddresses(poolAddress string, chainId int) (string, string) {
 			// 返回默认值，避免空字符串
 			return "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000"
 		}
-		return token0, token1
+
+		// 更新数据库中的代币地址
+		if err := updatePoolTokenAddresses(poolAddress, chainId, token0Address, token1Address); err != nil {
+			log.Logger.Warn("更新数据库代币地址失败",
+				zap.String("pool_address", poolAddress),
+				zap.Int("chain_id", chainId),
+				zap.Error(err))
+		}
+
+		return token0Address, token1Address
 	}
 
-	return result.Token0, result.Token1
+	// 检查代币地址是否为默认值，如果是则重新从合约获取
+	if pool.Token0Address == "0x0000000000000000000000000000000000000000" ||
+		pool.Token1Address == "0x0000000000000000000000000000000000000000" {
+		log.Logger.Info("检测到默认代币地址，重新从合约获取",
+			zap.String("pool_address", poolAddress),
+			zap.Int("chain_id", chainId))
 
+		token0Address, token1Address, err := getPoolTokenAddressesFromContract(poolAddress, chainId)
+		if err != nil {
+			log.Logger.Error("从合约获取代币地址失败",
+				zap.String("pool_address", poolAddress),
+				zap.Int("chain_id", chainId),
+				zap.Error(err))
+			return pool.Token0Address, pool.Token1Address
+		}
+
+		// 更新数据库中的代币地址
+		if err := updatePoolTokenAddresses(poolAddress, chainId, token0Address, token1Address); err != nil {
+			log.Logger.Warn("更新数据库代币地址失败",
+				zap.String("pool_address", poolAddress),
+				zap.Int("chain_id", chainId),
+				zap.Error(err))
+		}
+
+		return token0Address, token1Address
+	}
+
+	return pool.Token0Address, pool.Token1Address
 }
 
 // updatePoolTokenAddresses 更新数据库中的代币地址
@@ -200,7 +224,6 @@ func parseMintEvent(vLog types.Log, chainId int) *model.LiquidityPoolEvent {
 	amount1 := new(big.Int).SetBytes(common.TrimLeftZeroes(data[32:64]))
 	// 获取池子的代币地址
 	token0Address, token1Address := getPoolTokenAddresses(vLog.Address.Hex(), chainId)
-
 	return &model.LiquidityPoolEvent{
 		ChainId:       int64(chainId),
 		TxHash:        vLog.TxHash.Hex(),
@@ -302,7 +325,7 @@ func updateLiquidityPoolInfo(tx *gorm.DB, events []*model.LiquidityPoolEvent) er
 	for _, event := range events {
 		poolEvents[event.PoolAddress] = append(poolEvents[event.PoolAddress], event)
 	}
-	tokenService := service.NewTokenService()
+
 	for poolAddress, poolEventList := range poolEvents {
 		// 检查池子是否存在
 		var pool model.LiquidityPool
@@ -318,20 +341,17 @@ func updateLiquidityPoolInfo(tx *gorm.DB, events []*model.LiquidityPoolEvent) er
 				token0Address = "0x0000000000000000000000000000000000000000"
 				token1Address = "0x0000000000000000000000000000000000000000"
 			}
-			// 使用Clauses处理唯一索引冲突
-			// 在创建池子逻辑中添加
-			symbol0, decimals0, _ := tokenService.GetTokenDetails(token0Address, poolEventList[0].ChainId)
-			symbol1, decimals1, _ := tokenService.GetTokenDetails(token1Address, poolEventList[0].ChainId)
+
 			// 创建新的流动性池记录
 			pool = model.LiquidityPool{
 				ChainId:        poolEventList[0].ChainId,
 				PoolAddress:    poolAddress,
 				Token0Address:  token0Address, // 使用从合约获取的真实地址
 				Token1Address:  token1Address, // 使用从合约获取的真实地址
-				Token0Symbol:   symbol0,       // 暂时留空
-				Token1Symbol:   symbol1,       // 暂时留空
-				Token0Decimals: decimals0,     // 默认值
-				Token1Decimals: decimals1,     // 默认值
+				Token0Symbol:   "",            // 暂时留空
+				Token1Symbol:   "",            // 暂时留空
+				Token0Decimals: 0,             // 默认值
+				Token1Decimals: 0,             // 默认值
 				Reserve0:       "0",           // 默认值
 				Reserve1:       "0",           // 默认值
 				TotalSupply:    "0",           // 默认值
@@ -351,37 +371,15 @@ func updateLiquidityPoolInfo(tx *gorm.DB, events []*model.LiquidityPoolEvent) er
 			return err
 		} else {
 			// 更新现有池子的区块号
-			if pool.Token0Address == "0x0000000000000000000000000000000000000000" {
-				token0, token1, err := getPoolTokenAddressesFromContract(poolAddress, int(poolEventList[0].ChainId))
-				if err == nil {
-					pool.Token0Address = token0
-					pool.Token1Address = token1
-				}
-			}
-			// 使用Clauses处理唯一索引冲突
-			err := tx.Clauses(clause.OnConflict{
-				Columns: []clause.Column{{Name: "pool_address"}, {Name: "chain_id"}},
-				DoUpdates: clause.Assignments(map[string]interface{}{
-					"last_block_num": poolEventList[len(poolEventList)-1].BlockNumber,
-					"token0_address": pool.Token0Address,
-					"token1_address": pool.Token1Address,
-					"updated_at":     time.Now(),
-				}),
-			}).Create(&pool).Error
-
-			if err != nil {
-				log.Logger.Error("池子记录更新失败",
-					zap.String("pool", poolAddress),
-					zap.Any("chain", poolEventList[0].ChainId),
-					zap.Error(err))
+			if err := tx.Model(&pool).Update("last_block_num", poolEventList[len(poolEventList)-1].BlockNumber).Error; err != nil {
+				log.Logger.Error("更新流动性池区块号失败", zap.Error(err))
 				return err
 			}
 		}
 
-		// 使用表达式更新交易计数
-		if err := tx.Model(&model.LiquidityPool{}).
-			Where("pool_address = ? AND chain_id = ?", poolAddress, poolEventList[0].ChainId).
-			Update("tx_count", gorm.Expr("tx_count + ?", len(poolEventList))).Error; err != nil {
+		// 更新交易计数
+		if err := tx.Model(&pool).Update("tx_count", gorm.Expr("tx_count + ?", len(poolEventList))).Error; err != nil {
+			log.Logger.Error("更新流动性池交易计数失败", zap.Error(err))
 			return err
 		}
 		// 直接从Uniswap V2池子合约获取最新储备量
@@ -399,9 +397,9 @@ func updateLiquidityPoolInfo(tx *gorm.DB, events []*model.LiquidityPoolEvent) er
 
 		// 更新池子信息
 		if err := tx.Model(&pool).Updates(map[string]interface{}{
-			"reserve0": reserve0.String(),
-			"reserve1": reserve1.String(),
-			//"liquidity":    totalSupply.String(),
+			"reserve0":     reserve0.String(),
+			"reserve1":     reserve1.String(),
+			"liquidity":    totalSupply.String(),
 			"total_supply": totalSupply.String(),
 			"price":        price,
 		}).Error; err != nil {
