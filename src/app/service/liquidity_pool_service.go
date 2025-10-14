@@ -7,6 +7,10 @@ import (
 
 type LiquidityPoolService struct{}
 
+func NewLiquidityPoolService() *LiquidityPoolService {
+	return &LiquidityPoolService{}
+}
+
 // GetPoolByAddress 根据池子地址获取流动性池信息
 func (s *LiquidityPoolService) GetPoolByAddress(chainId int64, poolAddress string) (*model.LiquidityPool, error) {
 	var pool model.LiquidityPool

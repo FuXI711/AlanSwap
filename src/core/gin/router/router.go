@@ -75,10 +75,12 @@ func ApiBind(r *gin.Engine, ctx *ctx.Context) {
 	//我的空投奖励预览
 	author.GET("/airdrop/overview", airDropApi.Overview)
 
-	// 流动性池相关接口
-	// 不需要验证的接口
-	v.GET("/liquidity/pools", api.GetLiquidityPools)
-	v.GET("/liquidity-pool-events", api.GetLiquidityPoolEvents)
-	v.GET("/liquidity-pool-stats", api.GetLiquidityPoolStats)
+	liquidityPoolApi := api.NewLiquidityPoolApi()
+	// 新增：POST 版本的池子列表（支持 all/my 和统计字段）
+	v.POST("/liquidity/pools", liquidityPoolApi.PostLiquidityPools)
+	// 新增：GET 池子表现（按用户地址返回 poolPair 与 24hVolume）
+	v.GET("/liquidity/poolPerformance", liquidityPoolApi.GetPoolPerformance)
+	//获取流动性池事件列表
+	v.GET("/liquidity-pool-events", liquidityPoolApi.GetLiquidityPoolEvents)
 
 }
