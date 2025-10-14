@@ -643,7 +643,10 @@ func (lp *LiquidityPoolApi) PostLiquidityPools(c *gin.Context) {
 			return
 		}
 	} else {
-		_, _, err := lp.svc.ListActivePools(0, offset, req.PageSize)
+		//使用短变量声明会在此作用域内创建新的局部变量，而不是使用外部声明的变量。
+		//因此，即使内部赋值了，外部的pools和total仍然是零值，导致后续处理时数据丢失。
+		var err error
+		pools, total, err = lp.svc.ListActivePools(0, offset, req.PageSize)
 		if err != nil {
 			result.Error(c, result.DBQueryFailed)
 			return

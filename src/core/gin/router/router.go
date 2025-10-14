@@ -79,7 +79,7 @@ func ApiBind(r *gin.Engine, ctx *ctx.Context) {
 	//1.新增：获取流动性池统计数据
 	v.GET("/liquidity/stats", liquidityPoolApi.GetLiquidityStats)
 	// 2.新增：POST 版本的池子列表（支持 all/my 和统计字段）
-	v.POST("/liquidity/pools", liquidityPoolApi.PostLiquidityPools)
+	v.GET("/liquidity/pools", liquidityPoolApi.PostLiquidityPools)
 	// 3.新增：GET 流动性收益分布
 	v.GET("/liquidity/rewardDistribution", liquidityPoolApi.GetRewardDistribution)
 	// 4.新增：GET 池子表现（按用户地址返回 poolPair 与 24hVolume）
