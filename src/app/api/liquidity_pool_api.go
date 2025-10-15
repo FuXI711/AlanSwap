@@ -443,7 +443,14 @@ func (lp *LiquidityPoolApi) GetLiquidityStats(c *gin.Context) {
 	}
 
 	// 返回响应
-	c.JSON(http.StatusOK, stats)
+	result.OK(c, gin.H{
+		"myLiquidityValue":        stats.MyLiquidityValue,
+		"myLiquidityPeriodChange": stats.MyLiquidityPeriodChange,
+		"totalFees":               stats.TotalFees,
+		"totalFeesTodayChange":    stats.TotalFeesTodayChange,
+		"activePoolsCount":        stats.ActivePoolsCount,
+		"totalPoolsCount":         stats.TotalPoolsCount,
+	})
 }
 
 // GetLiquidityPoolStats 获取流动性池统计信息

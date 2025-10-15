@@ -6,8 +6,8 @@ CREATE TABLE IF NOT EXISTS liquidity_pool_events (
     block_number BIGINT NOT NULL,
     event_type VARCHAR(50) NOT NULL,
     pool_address VARCHAR(42) NOT NULL,
-    token0_address VARCHAR(42) NOT NULL,
-    token1_address VARCHAR(42) NOT NULL,
+    token0_address VARCHAR(42),
+    token1_address VARCHAR(42),
     user_address VARCHAR(42) NOT NULL,
     amount0_in DECIMAL(78,0) DEFAULT '0',
     amount1_in DECIMAL(78,0) DEFAULT '0',
@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS liquidity_pools (
     id BIGSERIAL PRIMARY KEY,
     chain_id BIGINT NOT NULL,
     pool_address VARCHAR(42) NOT NULL,
-    token0_address VARCHAR(42) NOT NULL,
-    token1_address VARCHAR(42) NOT NULL,
+    token0_address VARCHAR(42),
+    token1_address VARCHAR(42),
     token0_symbol VARCHAR(20),
     token1_symbol VARCHAR(20),
     token0_decimals INTEGER DEFAULT 18,
@@ -67,8 +67,8 @@ COMMENT ON COLUMN liquidity_pool_events.tx_hash IS '交易哈希';
 COMMENT ON COLUMN liquidity_pool_events.block_number IS '区块号';
 COMMENT ON COLUMN liquidity_pool_events.event_type IS '事件类型：Swap, AddLiquidity, RemoveLiquidity';
 COMMENT ON COLUMN liquidity_pool_events.pool_address IS '流动性池合约地址';
-COMMENT ON COLUMN liquidity_pool_events.token0_address IS '代币0地址';
-COMMENT ON COLUMN liquidity_pool_events.token1_address IS '代币1地址';
+COMMENT ON COLUMN liquidity_pool_events.token0_address IS 'Token0地址，暂时可为空';
+COMMENT ON COLUMN liquidity_pool_events.token1_address IS 'Token1地址，暂时可为空';
 COMMENT ON COLUMN liquidity_pool_events.user_address IS '用户地址';
 COMMENT ON COLUMN liquidity_pool_events.amount0_in IS '代币0输入数量';
 COMMENT ON COLUMN liquidity_pool_events.amount1_in IS '代币1输入数量';
@@ -77,8 +77,8 @@ COMMENT ON COLUMN liquidity_pool_events.amount1_out IS '代币1输出数量';
 
 COMMENT ON COLUMN liquidity_pools.chain_id IS '链ID';
 COMMENT ON COLUMN liquidity_pools.pool_address IS '流动性池合约地址';
-COMMENT ON COLUMN liquidity_pools.token0_address IS '代币0地址';
-COMMENT ON COLUMN liquidity_pools.token1_address IS '代币1地址';
+COMMENT ON COLUMN liquidity_pools.token0_address IS 'Token0地址，暂时可为空';
+COMMENT ON COLUMN liquidity_pools.token1_address IS 'Token1地址，暂时可为空';
 COMMENT ON COLUMN liquidity_pools.token0_symbol IS '代币0符号';
 COMMENT ON COLUMN liquidity_pools.token1_symbol IS '代币1符号';
 COMMENT ON COLUMN liquidity_pools.token0_decimals IS '代币0精度';
