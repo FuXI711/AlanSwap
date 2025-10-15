@@ -63,6 +63,10 @@ func StartSync(c context.Context) {
 			mintTopic := crypto.Keccak256Hash([]byte("Mint(address,uint256,uint256)")).Hex()
 			burnTopic := crypto.Keccak256Hash([]byte("Burn(address,uint256,uint256,address)")).Hex()
 
+			// 空投事件
+			rewardClaimedTopic := crypto.Keccak256Hash([]byte("RewardClaimed(uint256,address,uint256,uint256,uint256,uint256,uint256)")).Hex()
+			updateTotalRewardTopic := crypto.Keccak256Hash([]byte("UpdateTotalRewardUpdated(uint256,address,uint256,uint256,uint256,uint256)")).Hex()
+
 			// 直接使用链信息中的合约地址
 			contractAddresses := []string{chain.Address}
 			if chain.Address == "" {
@@ -128,8 +132,10 @@ func StartSync(c context.Context) {
 						continue
 					}
 
-					var userOperationRecords []*model.UserOperationRecord
-					var liquidityPoolEvents []*model.LiquidityPoolEvent
+				var userOperationRecords []*model.UserOperationRecord
+				var liquidityPoolEvents []*model.LiquidityPoolEvent
+				var rewardClaimedEvents []*model.RewardClaimedEvent
+				var totalRewardUpdatedEvents []*model.TotalRewardUpdatedEvent
 					// 获取交易发送者（真实用户地址）
 
 					// 解析日志并分类处理
@@ -156,6 +162,14 @@ func StartSync(c context.Context) {
 							if event != nil {
 								liquidityPoolEvents = append(liquidityPoolEvents, event)
 							}
+						case rewardClaimedTopic:
+							if e := parseRewardClaimedEvent(vLog, chainId); e != nil {
+								rewardClaimedEvents = append(rewardClaimedEvents, e)
+							}
+						case updateTotalRewardTopic:
+							if e := parseTotalRewardUpdatedEvent(vLog, chainId); e != nil {
+								totalRewardUpdatedEvents = append(totalRewardUpdatedEvents, e)
+							}
 						default:
 							log.Logger.Debug("未知的事件类型",
 								zap.String("topic0", topic0),
@@ -178,6 +192,17 @@ func StartSync(c context.Context) {
 						log.Logger.Info("解析流动性池事件成功", zap.Int("event_count", len(liquidityPoolEvents)))
 						if err := saveLiquidityPoolEvents(liquidityPoolEvents, chainId, targetBlockNum); err != nil {
 							log.Logger.Error("保存流动性池事件失败", zap.Error(err))
+							success = false
+						}
+					}
+
+					// 保存空投事件
+					if len(rewardClaimedEvents) > 0 || len(totalRewardUpdatedEvents) > 0 {
+						log.Logger.Info("解析空投事件成功",
+							zap.Int("reward_claimed_count", len(rewardClaimedEvents)),
+							zap.Int("total_reward_updated_count", len(totalRewardUpdatedEvents)))
+						if err := saveAirdropEvents(rewardClaimedEvents, totalRewardUpdatedEvents, chainId, targetBlockNum); err != nil {
+							log.Logger.Error("保存空投事件失败", zap.Error(err))
 							success = false
 						}
 					}
