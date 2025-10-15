@@ -15,6 +15,7 @@ type LiquidityPoolEvent struct {
 	Token0Address string    `json:"token0Address" gorm:"column:token0_address"`
 	Token1Address string    `json:"token1Address" gorm:"column:token1_address"`
 	UserAddress   string    `json:"userAddress" gorm:"column:user_address;not null;index"`
+	CallerAddress string    `json:"callerAddress" gorm:"column:caller_address"`
 	Amount0In     string    `json:"amount0In" gorm:"column:amount0_in;type:decimal(78,0)"` // 大数用字符串存储
 	Amount1In     string    `json:"amount1In" gorm:"column:amount1_in;type:decimal(78,0)"`
 	Amount0Out    string    `json:"amount0Out" gorm:"column:amount0_out;type:decimal(78,0)"`

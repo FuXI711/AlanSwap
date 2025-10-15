@@ -119,23 +119,25 @@ func StartSync(c context.Context) {
 
 					if len(allLogs) == 0 {
 						log.Logger.Debug("GetFilterLogs is empty")
-						// 即使没有事件也要更新区块高度
-						//if err := updateBlockNumber(chainId, targetBlockNum); err != nil {
-						//	log.Logger.Error("更新区块高度失败", zap.Error(err))
-						//} else {
-						//	lastBlockNum = targetBlockNum + 1
-						//}
+						//即使没有事件也要更新区块高度
+						if err := updateBlockNumber(chainId, targetBlockNum); err != nil {
+							log.Logger.Error("更新区块高度失败", zap.Error(err))
+						} else {
+							lastBlockNum = targetBlockNum + 1
+						}
 						continue
 					}
 
 					var userOperationRecords []*model.UserOperationRecord
 					var liquidityPoolEvents []*model.LiquidityPoolEvent
+					// 获取交易发送者（真实用户地址）
 
 					// 解析日志并分类处理
 					for _, vLog := range allLogs {
 						if len(vLog.Topics) == 0 {
 							continue
 						}
+						address, _ := evmClient.GetUserAddress(vLog)
 
 						topic0 := vLog.Topics[0].Hex()
 						switch topic0 {
@@ -150,7 +152,7 @@ func StartSync(c context.Context) {
 								userOperationRecords = append(userOperationRecords, withdrawnStruct)
 							}
 						case swapTopic, mintTopic, burnTopic:
-							event := parseLiquidityPoolEvent(vLog, chainId)
+							event := parseLiquidityPoolEvent(vLog, chainId, address)
 							if event != nil {
 								liquidityPoolEvents = append(liquidityPoolEvents, event)
 							}

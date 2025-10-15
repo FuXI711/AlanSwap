@@ -53,6 +53,30 @@ func (c *Evm) GetFilterLogs(fromBlock *big.Int, toBlock *big.Int, contractAddres
 	return logs, nil
 }
 
+func (c *Evm) GetUserAddress(vLog types.Log) (string, error) {
+	// 获取原始交易
+	tx, _, err := c.client.TransactionByHash(context.Background(), vLog.TxHash)
+	if err != nil {
+		log.Logger.Error("获取交易失败",
+			zap.String("txHash", vLog.TxHash.Hex()),
+			zap.Error(err))
+		return "0x0000000000000000000000000000000000000000", err
+	}
+
+	// 解析交易发送者
+	signer := types.LatestSignerForChainID(tx.ChainId())
+	from, err := types.Sender(signer, tx)
+	if err != nil {
+		log.Logger.Warn("解析发送者地址失败",
+			zap.String("txHash", tx.Hash().Hex()),
+			zap.Error(err))
+		// 返回零地址作为fallback
+		return "0x0000000000000000000000000000000000000000", nil
+	}
+
+	return from.Hex(), nil
+}
+
 // GetFilterLogsWithTopics 获取带有特定主题的日志
 func (c *Evm) GetFilterLogsWithTopics(fromBlock *big.Int, toBlock *big.Int, contractAddresses []string, topics [][]common.Hash) ([]types.Log, error) {
 	addresses := make([]common.Address, len(contractAddresses))

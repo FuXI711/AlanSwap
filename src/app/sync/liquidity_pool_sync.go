@@ -20,7 +20,7 @@ import (
 )
 
 // parseLiquidityPoolEvent 解析流动性池事件
-func parseLiquidityPoolEvent(vLog types.Log, chainId int) *model.LiquidityPoolEvent {
+func parseLiquidityPoolEvent(vLog types.Log, chainId int, address string) *model.LiquidityPoolEvent {
 	if len(vLog.Topics) == 0 {
 		return nil
 	}
@@ -29,17 +29,17 @@ func parseLiquidityPoolEvent(vLog types.Log, chainId int) *model.LiquidityPoolEv
 
 	// Swap事件解析
 	if topic0 == crypto.Keccak256Hash([]byte("Swap(address,uint256,uint256,uint256,uint256,address)")).Hex() {
-		return parseSwapEvent(vLog, chainId)
+		return parseSwapEvent(vLog, chainId, address)
 	}
 
 	// Mint事件解析
 	if topic0 == crypto.Keccak256Hash([]byte("Mint(address,uint256,uint256)")).Hex() {
-		return parseMintEvent(vLog, chainId)
+		return parseMintEvent(vLog, chainId, address)
 	}
 
 	// Burn事件解析
 	if topic0 == crypto.Keccak256Hash([]byte("Burn(address,uint256,uint256,address)")).Hex() {
-		return parseBurnEvent(vLog, chainId)
+		return parseBurnEvent(vLog, chainId, address)
 	}
 
 	return nil
@@ -116,13 +116,13 @@ func getPoolTokenAddresses(poolAddress string, chainId int) (string, string) {
 			return "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000"
 		}
 
-		// 更新数据库中的代币地址
-		if err := updatePoolTokenAddresses(poolAddress, chainId, token0Address, token1Address); err != nil {
-			log.Logger.Warn("更新数据库代币地址失败",
-				zap.String("pool_address", poolAddress),
-				zap.Int("chain_id", chainId),
-				zap.Error(err))
-		}
+		//// 更新数据库中的代币地址
+		//if err := updatePoolTokenAddresses(poolAddress, chainId, token0Address, token1Address); err != nil {
+		//	log.Logger.Warn("更新数据库代币地址失败",
+		//		zap.String("pool_address", poolAddress),
+		//		zap.Int("chain_id", chainId),
+		//		zap.Error(err))
+		//}
 
 		return token0Address, token1Address
 	}
@@ -174,7 +174,7 @@ func updatePoolTokenAddresses(poolAddress string, chainId int, token0Address, to
 }
 
 // parseSwapEvent 解析Swap事件
-func parseSwapEvent(vLog types.Log, chainId int) *model.LiquidityPoolEvent {
+func parseSwapEvent(vLog types.Log, chainId int, address string) *model.LiquidityPoolEvent {
 	if len(vLog.Topics) < 3 || len(vLog.Data) < 128 {
 		return nil
 	}
@@ -198,7 +198,8 @@ func parseSwapEvent(vLog types.Log, chainId int) *model.LiquidityPoolEvent {
 		PoolAddress:   vLog.Address.Hex(),
 		Token0Address: token0Address,
 		Token1Address: token1Address,
-		UserAddress:   sender,
+		UserAddress:   address,
+		CallerAddress: sender,
 		Amount0In:     amount0In.String(),  // 改为字符串
 		Amount1In:     amount1In.String(),  // 改为字符串
 		Amount0Out:    amount0Out.String(), // 改为字符串
@@ -211,7 +212,7 @@ func parseSwapEvent(vLog types.Log, chainId int) *model.LiquidityPoolEvent {
 }
 
 // parseMintEvent 解析Mint事件
-func parseMintEvent(vLog types.Log, chainId int) *model.LiquidityPoolEvent {
+func parseMintEvent(vLog types.Log, chainId int, address string) *model.LiquidityPoolEvent {
 	if len(vLog.Topics) < 2 || len(vLog.Data) < 64 {
 		return nil
 	}
@@ -232,7 +233,8 @@ func parseMintEvent(vLog types.Log, chainId int) *model.LiquidityPoolEvent {
 		PoolAddress:   vLog.Address.Hex(),
 		Token0Address: token0Address,
 		Token1Address: token1Address,
-		UserAddress:   sender,
+		UserAddress:   address,
+		CallerAddress: sender,
 		Amount0In:     amount0.String(), // 改为字符串
 		Amount1In:     amount1.String(), // 改为字符串
 		Amount0Out:    "0",              // 改为字符串
@@ -245,7 +247,7 @@ func parseMintEvent(vLog types.Log, chainId int) *model.LiquidityPoolEvent {
 }
 
 // parseBurnEvent 解析Burn事件
-func parseBurnEvent(vLog types.Log, chainId int) *model.LiquidityPoolEvent {
+func parseBurnEvent(vLog types.Log, chainId int, address string) *model.LiquidityPoolEvent {
 	if len(vLog.Topics) < 3 || len(vLog.Data) < 64 {
 		return nil
 	}
@@ -267,7 +269,8 @@ func parseBurnEvent(vLog types.Log, chainId int) *model.LiquidityPoolEvent {
 		PoolAddress:   vLog.Address.Hex(),
 		Token0Address: token0Address,
 		Token1Address: token1Address,
-		UserAddress:   sender,
+		UserAddress:   address,
+		CallerAddress: sender,
 		Amount0In:     "0",              // 改为字符串
 		Amount1In:     "0",              // 改为字符串
 		Amount0Out:    amount0.String(), // 改为字符串
@@ -397,9 +400,9 @@ func updateLiquidityPoolInfo(tx *gorm.DB, events []*model.LiquidityPoolEvent) er
 
 		// 更新池子信息
 		if err := tx.Model(&pool).Updates(map[string]interface{}{
-			"reserve0":     reserve0.String(),
-			"reserve1":     reserve1.String(),
-			"liquidity":    totalSupply.String(),
+			"reserve0": reserve0.String(),
+			"reserve1": reserve1.String(),
+			//"liquidity":    totalSupply.String(),
 			"total_supply": totalSupply.String(),
 			"price":        price,
 		}).Error; err != nil {
