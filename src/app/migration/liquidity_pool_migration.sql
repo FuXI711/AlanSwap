@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS liquidity_pool_events (
     price DECIMAL(30,18) DEFAULT '0',
     liquidity DECIMAL(78,0) DEFAULT '0',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    caller_address VARCHAR(42)
 );
 
 -- 流动性池信息表
