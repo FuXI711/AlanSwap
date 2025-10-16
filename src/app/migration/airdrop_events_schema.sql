@@ -111,6 +111,12 @@ CREATE TABLE IF NOT EXISTS user_task_status (
 
 COMMIT;
 
+INSERT INTO public.airdrop_whitelist (airdrop_id,wallet_address,total_reward,proof,created_at) VALUES
+	 (1,'0x61ddea492e49dda284efe85c55872af4b88cc911',300000000000000000000,NULL,'2025-10-16 17:00:10.809345+08'),
+	 (1,'0x6efa2a04bb328df4a69a7e14123ba27d4f741a5b',200000000000000000000,NULL,'2025-10-16 17:00:10.809345+08'),
+	 (1,'0x020875bf393a9cfc00b75a4f7b07576baa4248f4',400000000000000000000,NULL,'2025-10-16 17:00:10.809345+08');
+
+
 -- 查询实现提示：
 -- 1) 概览（overview）：
 --    totalRewards = SUM(airdrop_whitelist.total_reward) 按用户地址；

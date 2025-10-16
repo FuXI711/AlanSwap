@@ -71,10 +71,6 @@ func ApiBind(r *gin.Engine, ctx *ctx.Context) {
 	author := r.Group("/api/" + config.Conf.App.Version)
 	author.Use(middleware.AuthorMiddleware())
 
-	airDropApi := api.NewAirDropApi()
-	//我的空投奖励预览
-	author.GET("/airdrop/overview", airDropApi.Overview)
-
 	liquidityPoolApi := api.NewLiquidityPoolApi()
 	//1.新增：获取流动性池统计数据
 	v.GET("/liquidity/stats", liquidityPoolApi.GetLiquidityStats)
@@ -87,4 +83,16 @@ func ApiBind(r *gin.Engine, ctx *ctx.Context) {
 	//5.获取流动性池事件列表
 	v.GET("/liquidity-pool-events", liquidityPoolApi.GetLiquidityPoolEvents)
 
+	airDropApi := api.NewAirDropApi()
+	// 空投相关接口（开放访问，地址可从token或参数解析）
+	//我的空投奖励预览
+	v.GET("/airdrop/overview", airDropApi.Overview)
+	//获取用户可参与空投的列表
+	v.GET("/airdrop/available", airDropApi.Available)
+	//获取空投排行榜数据
+	v.POST("/airdrop/ranking", airDropApi.Ranking)
+	//任务列表数据
+	v.POST("/userTask/list", airDropApi.UserTaskList)
+	//用户领取空投（获取prof）
+	v.POST("/airdrop/claimReward", airDropApi.ClaimReward)
 }
