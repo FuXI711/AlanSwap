@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS tasks (
   icon_url TEXT,
   action_url TEXT,
   verify_type TEXT NOT NULL CHECK (verify_type IN ('auto','manual')),
+  reward_amount NUMERIC(78, 0) NOT NULL,
   deadline TIMESTAMPTZ DEFAULT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
