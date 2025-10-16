@@ -300,7 +300,7 @@ func saveAirdropAdminEvents(created []*AirdropCreatedInfo, activated []string, c
 			}
 			if err := tx.Exec(`
                 INSERT INTO airdrop_campaigns (airdrop_id, chain_id, merkle_airdrop_contract, name, merkle_root, total_reward, token_symbol, is_active, created_at, updated_at)
-                VALUES (?, ?, LOWER(?), ?, ?, ?, 'UNKNOWN', FALSE, NOW(), NOW())
+                VALUES (?, ?, LOWER(?), ?, ?, ?, 'CSWAP', FALSE, NOW(), NOW())
                 ON CONFLICT (airdrop_id) DO UPDATE
                 SET chain_id = EXCLUDED.chain_id,
                     merkle_airdrop_contract = EXCLUDED.merkle_airdrop_contract,
