@@ -283,9 +283,9 @@ func parseBurnEvent(vLog types.Log, chainId int, address string) *model.Liquidit
 }
 
 // saveLiquidityPoolEvents 保存流动性池事件到数据库
-func saveLiquidityPoolEvents(events []*model.LiquidityPoolEvent, chainId int, targetBlockNum uint64) error {
+func saveLiquidityPoolEvents(events []*model.LiquidityPoolEvent, chainId int, targetBlockNum uint64, addresses string) error {
 	if len(events) == 0 {
-		return updateLiquidityPoolBlockNumber(chainId, targetBlockNum)
+		return updateLiquidityPoolBlockNumber(chainId, targetBlockNum, addresses)
 	}
 
 	return ctx.Ctx.DB.Transaction(func(tx *gorm.DB) error {
@@ -302,7 +302,7 @@ func saveLiquidityPoolEvents(events []*model.LiquidityPoolEvent, chainId int, ta
 		}
 
 		// 更新区块号
-		return updateLiquidityPoolBlockNumber(chainId, targetBlockNum)
+		return updateLiquidityPoolBlockNumber(chainId, targetBlockNum, addresses)
 	})
 }
 
@@ -415,7 +415,7 @@ func updateLiquidityPoolInfo(tx *gorm.DB, events []*model.LiquidityPoolEvent) er
 }
 
 // updateLiquidityPoolBlockNumber 更新流动性池监听的区块号
-func updateLiquidityPoolBlockNumber(chainId int, blockNumber uint64) error {
+func updateLiquidityPoolBlockNumber(chainId int, blockNumber uint64, address string) error {
 	// 更新流动性池服务配置的区块号
-	return ctx.Ctx.DB.Model(&model.Chain{}).Where("chain_id = ? ", int64(chainId)).Update("last_block_num", blockNumber).Error
+	return ctx.Ctx.DB.Model(&model.Chain{}).Where("chain_id = ? AND address = ?", int64(chainId), address).Update("last_block_num", blockNumber).Error
 }
