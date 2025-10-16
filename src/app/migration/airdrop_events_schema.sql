@@ -9,26 +9,6 @@ BEGIN;
 ============================================================
 */
 CREATE TABLE IF NOT EXISTS airdrop_campaigns (
-<<<<<<< HEAD
-  airdrop_id NUMERIC(78,0) PRIMARY KEY,
-  chain_id INTEGER NOT NULL,
-  merkle_airdrop_contract TEXT CHECK (merkle_airdrop_contract ~ '^0x[0-9a-f]{40}$'),
-  name TEXT NOT NULL,
-  description TEXT,
-  icon_url TEXT,
-  token_symbol TEXT NOT NULL,
-  merkle_root TEXT CHECK (merkle_root ~ '^0x[0-9a-f]{64}$'),
-  total_reward NUMERIC(78,0) NOT NULL,
-  start_time TIMESTAMPTZ,
-  end_time TIMESTAMPTZ,
-  is_active BOOLEAN NOT NULL DEFAULT FALSE,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS idx_airdrop_campaigns_active_end
-  ON airdrop_campaigns (is_active, end_time DESC);
-=======
                                                  airdrop_id NUMERIC(78,0) PRIMARY KEY,
     chain_id INTEGER NOT NULL,
     merkle_airdrop_contract TEXT CHECK (merkle_airdrop_contract ~ '^0x[0-9a-f]{40}$'),
@@ -47,7 +27,6 @@ CREATE INDEX IF NOT EXISTS idx_airdrop_campaigns_active_end
 
 CREATE INDEX IF NOT EXISTS idx_airdrop_campaigns_active_end
     ON airdrop_campaigns (is_active, end_time DESC);
->>>>>>> a593d3e943c337fbf01ea3092593b39bf71aefcf
 
 /*
 ============================================================
@@ -55,19 +34,6 @@ CREATE INDEX IF NOT EXISTS idx_airdrop_campaigns_active_end
 ============================================================
 */
 CREATE TABLE IF NOT EXISTS airdrop_whitelist (
-<<<<<<< HEAD
-  id BIGSERIAL PRIMARY KEY,
-  airdrop_id NUMERIC(78,0) NOT NULL,
-  wallet_address TEXT NOT NULL CHECK (wallet_address ~ '^0x[0-9a-f]{40}$'),
-  total_reward NUMERIC(78,0) NOT NULL,
-  proof JSONB,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  UNIQUE (airdrop_id, wallet_address)
-);
-
-CREATE INDEX IF NOT EXISTS idx_airdrop_whitelist_airdrop
-  ON airdrop_whitelist (airdrop_id);
-=======
                                                  id BIGSERIAL PRIMARY KEY,
                                                  airdrop_id NUMERIC(78,0) NOT NULL,
     wallet_address TEXT NOT NULL CHECK (wallet_address ~ '^0x[0-9a-f]{40}$'),
@@ -79,7 +45,6 @@ CREATE INDEX IF NOT EXISTS idx_airdrop_whitelist_airdrop
 
 CREATE INDEX IF NOT EXISTS idx_airdrop_whitelist_airdrop
     ON airdrop_whitelist (airdrop_id);
->>>>>>> a593d3e943c337fbf01ea3092593b39bf71aefcf
 
 /*
 ============================================================
@@ -87,22 +52,6 @@ CREATE INDEX IF NOT EXISTS idx_airdrop_whitelist_airdrop
 ============================================================
 */
 CREATE TABLE IF NOT EXISTS reward_claimed_events (
-<<<<<<< HEAD
-  id BIGSERIAL PRIMARY KEY,
-  chain_id INTEGER NOT NULL,
-  contract_address TEXT NOT NULL CHECK (contract_address ~ '^0x[0-9a-f]{40}$'),
-  airdrop_id NUMERIC(78, 0) NOT NULL,
-  user_address TEXT NOT NULL CHECK (user_address ~ '^0x[0-9a-f]{40}$'),
-  claim_amount NUMERIC(78, 0) NOT NULL,
-  event_timestamp TIMESTAMPTZ NOT NULL,
-  block_number BIGINT NOT NULL,
-  tx_hash TEXT NOT NULL CHECK (tx_hash ~ '^0x[0-9a-f]{64}$'),
-  log_index INTEGER NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  CHECK (claim_amount >= 0),
-  UNIQUE (tx_hash, log_index)
-);
-=======
                                                      id BIGSERIAL PRIMARY KEY,
                                                      chain_id INTEGER NOT NULL,
                                                      contract_address TEXT NOT NULL CHECK (contract_address ~ '^0x[0-9a-f]{40}$'),
@@ -117,7 +66,6 @@ CREATE TABLE IF NOT EXISTS reward_claimed_events (
     CHECK (claim_amount >= 0),
     UNIQUE (tx_hash, log_index)
     );
->>>>>>> a593d3e943c337fbf01ea3092593b39bf71aefcf
 
 CREATE INDEX IF NOT EXISTS idx_reward_claimed_airdrop_user
     ON reward_claimed_events (airdrop_id, user_address);
@@ -131,38 +79,6 @@ CREATE INDEX IF NOT EXISTS idx_reward_claimed_contract_block
 ============================================================
 */
 CREATE TABLE IF NOT EXISTS tasks (
-<<<<<<< HEAD
-  task_id BIGSERIAL PRIMARY KEY,
-  task_name TEXT NOT NULL,
-  description TEXT,
-  icon_url TEXT,
-  action_url TEXT,
-  verify_type TEXT NOT NULL CHECK (verify_type IN ('auto','manual')),
-  reward_amount NUMERIC(78, 0) NOT NULL,
-  deadline TIMESTAMPTZ DEFAULT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS airdrop_task_bindings (
-  id BIGSERIAL PRIMARY KEY,
-  airdrop_id NUMERIC(78,0) NOT NULL,
-  task_id BIGINT NOT NULL REFERENCES tasks(task_id) ON DELETE CASCADE,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  UNIQUE (airdrop_id, task_id)
-);
-
-CREATE INDEX IF NOT EXISTS idx_airdrop_task_bindings_airdrop
-  ON airdrop_task_bindings (airdrop_id);
-
-CREATE TABLE IF NOT EXISTS user_task_status (
-  id BIGSERIAL PRIMARY KEY,
-  wallet_address TEXT NOT NULL CHECK (wallet_address ~ '^0x[0-9a-f]{40}$'),
-  task_id BIGINT NOT NULL REFERENCES tasks(task_id) ON DELETE CASCADE,
-  user_status INTEGER NOT NULL CHECK (user_status IN (0,1,2)), -- 0未开始 1进行中 2已完成
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  UNIQUE (wallet_address, task_id)
-);
-=======
                                      task_id BIGSERIAL PRIMARY KEY,
                                      task_name TEXT NOT NULL,
                                      description TEXT,
@@ -192,7 +108,6 @@ CREATE TABLE IF NOT EXISTS user_task_status (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (wallet_address, task_id)
     );
->>>>>>> a593d3e943c337fbf01ea3092593b39bf71aefcf
 
 COMMIT;
 
