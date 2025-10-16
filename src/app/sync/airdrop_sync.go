@@ -8,6 +8,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
 	appabi "github.com/mumu/cryptoSwap/src/abi"
 	"github.com/mumu/cryptoSwap/src/app/model"
 	"github.com/mumu/cryptoSwap/src/core/ctx"
@@ -15,6 +16,83 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
+
+type AirdropEvents struct {
+	RewardClaimedEvents      []*model.RewardClaimedEvent
+	TotalRewardUpdatedEvents []*model.TotalRewardUpdatedEvent
+	AirdropCreatedEvents     []*AirdropCreatedInfo
+	AirdropActivatedIds      []string
+}
+
+// ParseAirdropEvents 统一解析空投相关事件
+func ParseAirdropEvents(vLog types.Log, chainId int, address string) *AirdropEvents {
+	events := &AirdropEvents{}
+	topic0 := vLog.Topics[0].Hex()
+	// 定义所有空投相关事件的topic hash
+	rewardClaimedTopic := crypto.Keccak256Hash([]byte("RewardClaimed(uint256,address,uint256,uint256,uint256,uint256,uint256)")).Hex()
+	updateTotalRewardTopic := crypto.Keccak256Hash([]byte("UpdateTotalRewardUpdated(uint256,address,uint256,uint256,uint256,uint256)")).Hex()
+	airdropCreatedTopic := crypto.Keccak256Hash([]byte("AirdropCreated(uint256,string,bytes32,uint256,uint256)")).Hex()
+	airdropActivatedTopic := crypto.Keccak256Hash([]byte("AirdropActivated(uint256)")).Hex()
+	//rewardPoolUpdatedTopic := crypto.Keccak256Hash([]byte("RewardPoolUpdated(address,address)")).Hex()
+	switch topic0 {
+	case rewardClaimedTopic:
+		if e := parseRewardClaimedEvent(vLog, chainId); e != nil {
+			events.RewardClaimedEvents = append(events.RewardClaimedEvents, e)
+		}
+	case updateTotalRewardTopic:
+		if e := parseTotalRewardUpdatedEvent(vLog, chainId); e != nil {
+			events.TotalRewardUpdatedEvents = append(events.TotalRewardUpdatedEvents, e)
+		}
+	case airdropCreatedTopic:
+		if info := parseAirdropCreatedEvent(vLog, chainId); info != nil {
+			events.AirdropCreatedEvents = append(events.AirdropCreatedEvents, info)
+		}
+	case airdropActivatedTopic:
+		if id := parseAirdropActivatedEvent(vLog, chainId); id != "" {
+			events.AirdropActivatedIds = append(events.AirdropActivatedIds, id)
+		}
+	default:
+		return nil
+	}
+
+	return events
+}
+
+// SaveAirdropEvents 统一保存空投事件
+func SaveAirdropEvents(events *AirdropEvents, chainId int, targetBlockNum uint64, addresses string) error {
+	// 保存空投领取事件
+	if len(events.RewardClaimedEvents) > 0 {
+		log.Logger.Info("解析空投事件成功",
+			zap.Int("reward_claimed_count", len(events.RewardClaimedEvents)))
+		if err := saveAirdropEvents(events.RewardClaimedEvents, chainId, targetBlockNum, addresses); err != nil {
+			log.Logger.Error("保存空投领取事件失败", zap.Error(err))
+			return err
+		}
+	}
+
+	// 应用用户总奖励更新事件到白名单
+	if len(events.TotalRewardUpdatedEvents) > 0 {
+		log.Logger.Info("解析总奖励更新事件成功",
+			zap.Int("total_reward_updated_count", len(events.TotalRewardUpdatedEvents)))
+		if err := applyTotalRewardUpdates(events.TotalRewardUpdatedEvents, chainId, targetBlockNum, addresses); err != nil {
+			log.Logger.Error("应用总奖励更新事件失败", zap.Error(err))
+			return err
+		}
+	}
+
+	// 保存空投活动创建与激活事件
+	if len(events.AirdropCreatedEvents) > 0 || len(events.AirdropActivatedIds) > 0 {
+		log.Logger.Info("解析空投活动管理事件成功",
+			zap.Int("created_count", len(events.AirdropCreatedEvents)),
+			zap.Int("activated_count", len(events.AirdropActivatedIds)))
+		if err := saveAirdropAdminEvents(events.AirdropCreatedEvents, events.AirdropActivatedIds, chainId, targetBlockNum, addresses); err != nil {
+			log.Logger.Error("保存空投活动管理事件失败", zap.Error(err))
+			return err
+		}
+	}
+
+	return nil
+}
 
 // parseRewardClaimedEvent 解析 RewardClaimed(uint256,address,uint256,uint256,uint256,uint256,uint256)
 func parseRewardClaimedEvent(vLog types.Log, chainId int) *model.RewardClaimedEvent {
@@ -82,7 +160,7 @@ func parseTotalRewardUpdatedEvent(vLog types.Log, chainId int) *model.TotalRewar
 }
 
 // saveAirdropEvents 批量保存空投事件，并更新区块高度
-func saveAirdropEvents(rewardClaimed []*model.RewardClaimedEvent, chainId int, targetBlockNum uint64) error {
+func saveAirdropEvents(rewardClaimed []*model.RewardClaimedEvent, chainId int, targetBlockNum uint64, addresses string) error {
 	return ctx.Ctx.DB.Transaction(func(tx *gorm.DB) error {
 		// RewardClaimedEvents 去重插入（按精简版 schema，仅插入必要字段）
 		if len(rewardClaimed) > 0 {
@@ -108,14 +186,14 @@ func saveAirdropEvents(rewardClaimed []*model.RewardClaimedEvent, chainId int, t
 		}
 
 		// 更新链区块高度
-		return updateBlockNumber(chainId, targetBlockNum)
+		return updateBlockNumber(chainId, targetBlockNum, addresses)
 	})
 }
 
 // applyTotalRewardUpdates 使用 UpdateTotalRewardUpdated 事件更新用户白名单总奖励（UPSERT）
-func applyTotalRewardUpdates(totalUpdates []*model.TotalRewardUpdatedEvent, chainId int, targetBlockNum uint64) error {
+func applyTotalRewardUpdates(totalUpdates []*model.TotalRewardUpdatedEvent, chainId int, targetBlockNum uint64, addresses string) error {
 	if len(totalUpdates) == 0 {
-		return updateBlockNumber(chainId, targetBlockNum)
+		return updateBlockNumber(chainId, targetBlockNum, addresses)
 	}
 	return ctx.Ctx.DB.Transaction(func(tx *gorm.DB) error {
 		for _, e := range totalUpdates {
@@ -135,7 +213,7 @@ func applyTotalRewardUpdates(totalUpdates []*model.TotalRewardUpdatedEvent, chai
 				return err
 			}
 		}
-		return updateBlockNumber(chainId, targetBlockNum)
+		return updateBlockNumber(chainId, targetBlockNum, addresses)
 	})
 }
 
@@ -213,7 +291,7 @@ func parseAirdropActivatedEvent(vLog types.Log, chainId int) string {
 }
 
 // saveAirdropAdminEvents 保存活动创建与激活信息到 airdrop_campaigns
-func saveAirdropAdminEvents(created []*AirdropCreatedInfo, activated []string, chainId int, targetBlockNum uint64) error {
+func saveAirdropAdminEvents(created []*AirdropCreatedInfo, activated []string, chainId int, targetBlockNum uint64, addresses string) error {
 	return ctx.Ctx.DB.Transaction(func(tx *gorm.DB) error {
 		// 处理创建事件：存在则更新，不存在则插入（token_symbol 用占位符）
 		for _, e := range created {
@@ -250,6 +328,6 @@ func saveAirdropAdminEvents(created []*AirdropCreatedInfo, activated []string, c
 		}
 
 		// 更新链区块高度
-		return updateBlockNumber(chainId, targetBlockNum)
+		return updateBlockNumber(chainId, targetBlockNum, addresses)
 	})
 }
