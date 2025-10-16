@@ -126,7 +126,7 @@ func StartSync(c context.Context) {
 					if len(allLogs) == 0 {
 						log.Logger.Debug("GetFilterLogs is empty")
 						//即使没有事件也要更新区块高度
-						if err := updateBlockNumber(chainId, targetBlockNum); err != nil {
+						if err := updateBlockNumber(chainId, targetBlockNum, chain.Address); err != nil {
 							log.Logger.Error("更新区块高度失败", zap.Error(err))
 						} else {
 							lastBlockNum = targetBlockNum + 1
@@ -136,10 +136,11 @@ func StartSync(c context.Context) {
 
 					var userOperationRecords []*model.UserOperationRecord
 					var liquidityPoolEvents []*model.LiquidityPoolEvent
-					var rewardClaimedEvents []*model.RewardClaimedEvent
-					var totalRewardUpdatedEvents []*model.TotalRewardUpdatedEvent
-					var airdropCreatedEvents []*AirdropCreatedInfo
-					var airdropActivatedIds []string
+					var airdropEvents *AirdropEvents
+					//var rewardClaimedEvents []*model.RewardClaimedEvent
+					//var totalRewardUpdatedEvents []*model.TotalRewardUpdatedEvent
+					//var airdropCreatedEvents []*AirdropCreatedInfo
+					//var airdropActivatedIds []string
 					// 获取交易发送者（真实用户地址）
 
 					// 解析日志并分类处理
@@ -166,21 +167,18 @@ func StartSync(c context.Context) {
 							if event != nil {
 								liquidityPoolEvents = append(liquidityPoolEvents, event)
 							}
-						case rewardClaimedTopic:
-							if e := parseRewardClaimedEvent(vLog, chainId); e != nil {
-								rewardClaimedEvents = append(rewardClaimedEvents, e)
+						case rewardClaimedTopic, updateTotalRewardTopic, airdropCreatedTopic, airdropActivatedTopic:
+							// 处理空投相关事件
+							if airdropEvents == nil {
+								airdropEvents = &AirdropEvents{}
 							}
-						case updateTotalRewardTopic:
-							if e := parseTotalRewardUpdatedEvent(vLog, chainId); e != nil {
-								totalRewardUpdatedEvents = append(totalRewardUpdatedEvents, e)
-							}
-						case airdropCreatedTopic:
-							if info := parseAirdropCreatedEvent(vLog, chainId); info != nil {
-								airdropCreatedEvents = append(airdropCreatedEvents, info)
-							}
-						case airdropActivatedTopic:
-							if id := parseAirdropActivatedEvent(vLog, chainId); id != "" {
-								airdropActivatedIds = append(airdropActivatedIds, id)
+							parsedEvents := ParseAirdropEvents(vLog, chainId, address)
+							if parsedEvents != nil {
+								// 合并解析到的事件
+								airdropEvents.RewardClaimedEvents = append(airdropEvents.RewardClaimedEvents, parsedEvents.RewardClaimedEvents...)
+								airdropEvents.TotalRewardUpdatedEvents = append(airdropEvents.TotalRewardUpdatedEvents, parsedEvents.TotalRewardUpdatedEvents...)
+								airdropEvents.AirdropCreatedEvents = append(airdropEvents.AirdropCreatedEvents, parsedEvents.AirdropCreatedEvents...)
+								airdropEvents.AirdropActivatedIds = append(airdropEvents.AirdropActivatedIds, parsedEvents.AirdropActivatedIds...)
 							}
 						default:
 							log.Logger.Debug("未知的事件类型",
@@ -202,48 +200,29 @@ func StartSync(c context.Context) {
 
 					if len(liquidityPoolEvents) > 0 {
 						log.Logger.Info("解析流动性池事件成功", zap.Int("event_count", len(liquidityPoolEvents)))
-						if err := saveLiquidityPoolEvents(liquidityPoolEvents, chainId, targetBlockNum); err != nil {
+						if err := saveLiquidityPoolEvents(liquidityPoolEvents, chainId, targetBlockNum, chain.Address); err != nil {
 							log.Logger.Error("保存流动性池事件失败", zap.Error(err))
 							success = false
 						}
 					}
 
-					// 保存空投领取事件
-					if len(rewardClaimedEvents) > 0 {
-						log.Logger.Info("解析空投事件成功",
-							zap.Int("reward_claimed_count", len(rewardClaimedEvents)))
-						if err := saveAirdropEvents(rewardClaimedEvents, chainId, targetBlockNum); err != nil {
-							log.Logger.Error("保存空投领取事件失败", zap.Error(err))
-							success = false
-						}
-					}
-
-					// 应用用户总奖励更新事件到白名单
-					if len(totalRewardUpdatedEvents) > 0 {
-						log.Logger.Info("解析总奖励更新事件成功",
-							zap.Int("total_reward_updated_count", len(totalRewardUpdatedEvents)))
-						if err := applyTotalRewardUpdates(totalRewardUpdatedEvents, chainId, targetBlockNum); err != nil {
-							log.Logger.Error("应用总奖励更新事件失败", zap.Error(err))
-							success = false
-						}
-					}
-
-					// 保存空投活动创建与激活事件
-					if len(airdropCreatedEvents) > 0 || len(airdropActivatedIds) > 0 {
-						log.Logger.Info("解析空投活动管理事件成功",
-							zap.Int("created_count", len(airdropCreatedEvents)),
-							zap.Int("activated_count", len(airdropActivatedIds)))
-						if err := saveAirdropAdminEvents(airdropCreatedEvents, airdropActivatedIds, chainId, targetBlockNum); err != nil {
-							log.Logger.Error("保存空投活动管理事件失败", zap.Error(err))
+					// 统一保存空投事件
+					if airdropEvents != nil {
+						if err := SaveAirdropEvents(airdropEvents, chainId, targetBlockNum, chain.Address); err != nil {
+							log.Logger.Error("保存空投事件失败", zap.Error(err))
 							success = false
 						}
 					}
 
 					// 如果所有事件处理成功，更新区块高度
 					if success {
-						if len(userOperationRecords) == 0 && len(liquidityPoolEvents) == 0 {
+						if len(userOperationRecords) == 0 && len(liquidityPoolEvents) == 0 && (airdropEvents == nil ||
+							(len(airdropEvents.RewardClaimedEvents) == 0 &&
+								len(airdropEvents.TotalRewardUpdatedEvents) == 0 &&
+								len(airdropEvents.AirdropCreatedEvents) == 0 &&
+								len(airdropEvents.AirdropActivatedIds) == 0)) {
 							// 没有事件时也要更新区块高度
-							if err := updateBlockNumber(chainId, targetBlockNum); err != nil {
+							if err := updateBlockNumber(chainId, targetBlockNum, chain.Address); err != nil {
 								log.Logger.Error("更新区块高度失败", zap.Error(err))
 							} else {
 								lastBlockNum = targetBlockNum + 1
@@ -262,9 +241,9 @@ func StartSync(c context.Context) {
 }
 
 // updateBlockNumber 更新区块高度
-func updateBlockNumber(chainId int, blockNum uint64) error {
+func updateBlockNumber(chainId int, blockNum uint64, address string) error {
 	return ctx.Ctx.DB.Model(&model.Chain{}).
-		Where("chain_id = ?", int64(chainId)).
+		Where("chain_id = ? AND address = ?", int64(chainId), address).
 		Update("last_block_num", blockNum).Error
 }
 
