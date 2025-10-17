@@ -38,6 +38,14 @@ func ParseChainId(chainIdStr string) (int64, bool) {
 	return id, true
 }
 
+// ParseInt64 将字符串转换为int64
+// 如果转换失败，返回错误
+func ParseInt64(s string) (int64, error) {
+	if s == "" {
+		return 0, nil
+	}
+	return strconv.ParseInt(s, 10, 64)
+}
 func ValidateHexAddress(addr string) bool {
 	return addr != "" && common.IsHexAddress(addr)
 }

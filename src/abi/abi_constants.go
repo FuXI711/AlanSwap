@@ -4,10 +4,12 @@ import "github.com/ethereum/go-ethereum/accounts/abi"
 
 // ABI名称常量
 const (
-    ABIUniswapV2Pair    = "UniswapV2Pair"
-    ABIERC20            = "ERC20"
-    ABIUniswapV2Factory = "UniswapV2Factory"
-    ABIMerkleAirdrop    = "MerkleAirdrop"
+	ABIUniswapV2Pair    = "UniswapV2Pair"
+	ABIERC20            = "ERC20"
+	ABIUniswapV2Factory = "UniswapV2Factory"
+	ABIMerkleAirdrop    = "MerkleAirdrop"
+	STAKEV2             = "StakeV2"
+	ABIERC20Test        = "ERC20Test"
 )
 
 // 便捷函数 - 获取UniswapV2Pair ABI
@@ -19,13 +21,19 @@ func GetUniswapV2PairABI() abi.ABI {
 func GetERC20ABI() abi.ABI {
 	return GetABIManager().MustGetABI(ABIERC20)
 }
+func GetStakeV2ABI() abi.ABI {
+	return GetABIManager().MustGetABI(STAKEV2)
+}
+func GetERC20TestABI() abi.ABI {
+	return GetABIManager().MustGetABI(ABIERC20Test)
+}
 
 // 便捷函数 - 获取UniswapV2Factory ABI
 func GetUniswapV2FactoryABI() abi.ABI {
-    return GetABIManager().MustGetABI(ABIUniswapV2Factory)
+	return GetABIManager().MustGetABI(ABIUniswapV2Factory)
 }
 
 // 便捷函数 - 获取MerkleAirdrop ABI
 func GetMerkleAirdropABI() abi.ABI {
-    return GetABIManager().MustGetABI(ABIMerkleAirdrop)
+	return GetABIManager().MustGetABI(ABIMerkleAirdrop)
 }

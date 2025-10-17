@@ -5,6 +5,9 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -14,8 +17,6 @@ import (
 	commonUtil "github.com/mumu/cryptoSwap/src/common"
 	"github.com/mumu/cryptoSwap/src/core/ctx"
 	"github.com/mumu/cryptoSwap/src/core/result"
-	"strings"
-	"time"
 )
 
 var (
@@ -32,14 +33,15 @@ func NewAuthApi() *AuthApi {
 	}
 }
 
-// GetNonce  godoc
-// @Summary      获取随机数
-// @Description  获取随机数
-// @Accept       json
-// @Produce      json
-// @Param        data  body  model.Demo  true  "数据"
-// @Success      200 {object} map[string]string
-// @Router       /api/v1/auth/nonce?address [GET]
+// GetNonce godoc
+// @Summary 获取随机数
+// @Description 为用户生成用于签名的随机数
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param address query string true "用户地址"
+// @Success 200 {object} result.Response{data=map[string]string}
+// @Router /api/v1/auth/nonce [get]
 func (auth *AuthApi) GetNonce(c *gin.Context) {
 	address := c.Query("address")
 	if address != "" {
@@ -62,11 +64,15 @@ func (auth *AuthApi) GetNonce(c *gin.Context) {
 	}
 }
 
-// Verify
-//
-//	@Description: 验证用户签名
-//	@receiver auth
-//	@param c
+// Verify godoc
+// @Summary 验证用户签名
+// @Description 验证用户签名并签发JWT令牌
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param request body model.LoginVerify true "登录验证参数"
+// @Success 200 {object} result.Response{data=map[string]interface{}}
+// @Router /api/v1/auth/verify [post]
 func (auth *AuthApi) Verify(c *gin.Context) {
 	//nonce := c.Query("nonce")
 	//signature := c.Query("signature")
@@ -163,6 +169,14 @@ func verifySignature(address, signature, nonce string) (bool, error) {
 	return strings.EqualFold(recoveredAddr.Hex(), expectedAddr.Hex()), nil
 }
 
+// Logout godoc
+// @Summary 用户登出
+// @Description 用户登出，清除认证信息
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Success 200 {object} result.Response
+// @Router /api/v1/auth/logout [post]
 func (auth *AuthApi) Logout(c *gin.Context) {
 
 }

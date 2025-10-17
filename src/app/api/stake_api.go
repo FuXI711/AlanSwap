@@ -24,6 +24,7 @@ type StakeRequest struct {
 	ChainId     int64   `json:"chainId" binding:"required"`
 	Amount      float64 `json:"amount" binding:"required,gt=0"`
 	Token       string  `json:"token" binding:"required"`
+	PoolId      string  `json:"poolId" binding:"required"`
 }
 
 // WithdrawRequest 提取请求参数
@@ -31,6 +32,7 @@ type WithdrawRequest struct {
 	UserAddress string `json:"userAddress" binding:"required"`
 	ChainId     int64  `json:"chainId" binding:"required"`
 	StakeId     string `json:"stakeId" binding:"required"`
+	PoolId      string `json:"poolId" binding:"required"`
 }
 
 // GetStakeRecordsRequest 获取质押记录请求参数
@@ -62,17 +64,22 @@ func (s *StakeApi) Stake(c *gin.Context) {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
-
-	stakeRecord, err := s.svc.ProcessStake(req.UserAddress, req.ChainId, req.Amount, req.Token)
+	// 将poolId字符串转换为int64
+	poolId, err := commonUtil.ParseInt64(req.PoolId)
 	if err != nil {
-		result.SysError(c, "质押失败: "+err.Error())
+		result.Error(c, result.InvalidParameter)
+		return
+	}
+	stakeRecord, err := s.svc.ProcessStake(req.UserAddress, req.ChainId, req.Amount, req.Token, poolId)
+	if err != nil {
+		result.Error(c, result.StakeError)
 		return
 	}
 
 	result.OK(c, stakeRecord)
 }
 
-// Withdraw 提取质押
+// Withdraw godoc
 // @Summary 提取质押的代币
 // @Description 用户提取已质押的代币
 // @Tags stake
@@ -93,17 +100,22 @@ func (s *StakeApi) Withdraw(c *gin.Context) {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
-
-	stakeRecord, err := s.svc.ProcessWithdraw(req.UserAddress, req.ChainId, req.StakeId)
+	// 将poolId字符串转换为int64
+	poolId, err := commonUtil.ParseInt64(req.PoolId)
 	if err != nil {
-		result.SysError(c, "提取失败: "+err.Error())
+		result.Error(c, result.InvalidParameter)
+		return
+	}
+	stakeRecord, err := s.svc.ProcessWithdraw(req.UserAddress, req.ChainId, req.StakeId, poolId)
+	if err != nil {
+		result.Error(c, result.DBQueryFailed)
 		return
 	}
 
 	result.OK(c, stakeRecord)
 }
 
-// GetStakeRecords 获取质押记录
+// GetStakeRecords godoc
 // @Summary 获取用户的质押记录
 // @Description 分页获取用户的质押记录
 // @Tags stake

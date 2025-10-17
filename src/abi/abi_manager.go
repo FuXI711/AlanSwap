@@ -86,12 +86,14 @@ func (am *ABIManager) MustGetABI(abiName string) abi.ABI {
 
 // PreloadCommonABIs 预加载常用ABI
 func (am *ABIManager) PreloadCommonABIs() error {
-    commonABIs := map[string]string{
-        "UniswapV2Pair":    "config/uniswap_v2_pair.abi.json",
-        "ERC20":            "config/erc20.abi.json",
-        "UniswapV2Factory": "config/uniswap_v2_factory.abi.json",
-        "MerkleAirdrop":    "config/merkle_airdrop.abi.json",
-    }
+	commonABIs := map[string]string{
+		"UniswapV2Pair":    "config/uniswap_v2_pair.abi.json",
+		"ERC20":            "config/erc20.abi.json",
+		"UniswapV2Factory": "config/uniswap_v2_factory.abi.json",
+		"MerkleAirdrop":    "config/merkle_airdrop.abi.json",
+		"StakeV2":          "config/StakeV2.abi.json",
+		"ERC20Test":        "config/ERC20Test.abi.json",
+	}
 
 	for name, path := range commonABIs {
 		if err := am.LoadABI(name, path); err != nil {

@@ -17,10 +17,14 @@ import (
 )
 
 // Start
-//
-//	@Description:
-//	@param configFile
-//	@param serverType  为了简单区分不同的服务类型，1 代表 api服务  2 代表监听服务
+// @Summary 启动应用服务
+// @Description 根据配置文件和服务器类型启动相应的服务
+// @Tags system
+// @Accept json
+// @Produce json
+// @Param configFile query string true "配置文件路径"
+// @Param serverType query int true "服务器类型 (1: API服务, 2: 监听服务)"
+// @Router /start [post]
 func Start(configFile string, serverType int) {
 	c, cancel := context.WithCancel(context.Background())
 	defer cancel()
