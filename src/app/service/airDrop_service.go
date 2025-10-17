@@ -134,11 +134,29 @@ func (s *AirDropService) Available(walletAddress string, page, size int) (int64,
 
     list := make([]AvailableItemDTO, 0)
     for rows.Next() {
-        var item AvailableItemDTO
-        var isActive bool
-        if err := rows.Scan(&item.AirdropId, &item.Name, &item.Description, &item.AirDropIcon, &item.TokenSymbol, &item.TotalReward, &item.StartTime, &item.EndTime, &isActive); err != nil {
+        var (
+            airdropId   string
+            name        string
+            description sql.NullString
+            iconUrl     sql.NullString
+            tokenSymbol string
+            totalReward string
+            startTime   sql.NullTime
+            endTime     sql.NullTime
+            isActive    bool
+        )
+        if err := rows.Scan(&airdropId, &name, &description, &iconUrl, &tokenSymbol, &totalReward, &startTime, &endTime, &isActive); err != nil {
             return 0, nil, err
         }
+        var item AvailableItemDTO
+        item.AirdropId = airdropId
+        item.Name = name
+        item.Description = nilToEmpty(description)
+        item.AirDropIcon = nilToEmpty(iconUrl)
+        item.TokenSymbol = tokenSymbol
+        item.TotalReward = totalReward
+        if startTime.Valid { item.StartTime = startTime.Time } else { item.StartTime = time.Time{} }
+        if endTime.Valid { item.EndTime = endTime.Time } else { item.EndTime = time.Time{} }
 
         // 用户总奖励（来自 whitelist）
         var userTotal sql.NullString
