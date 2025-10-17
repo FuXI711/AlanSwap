@@ -192,7 +192,7 @@ func StartSync(c context.Context) {
 
 					if len(userOperationRecords) > 0 {
 						log.Logger.Info("解析质押池事件成功", zap.Int("event_count", len(userOperationRecords)))
-						if err := updateDbUserAmount(userOperationRecords, chainId, targetBlockNum); err != nil {
+						if err := updateDbUserAmount(userOperationRecords, chainId, targetBlockNum, chain.Address); err != nil {
 							log.Logger.Error("保存质押池事件失败", zap.Error(err))
 							success = false
 						}
@@ -320,10 +320,10 @@ func analysisWithdrawnTopic(vLog types.Log, chainId int) *model.UserOperationRec
 }
 
 // updateDbUserAmount 更新数据库用户金额
-func updateDbUserAmount(userOperationRecords []*model.UserOperationRecord, chainId int, targetBlockNum uint64) error {
+func updateDbUserAmount(userOperationRecords []*model.UserOperationRecord, chainId int, targetBlockNum uint64, address string) error {
 	if len(userOperationRecords) == 0 {
 		// 更新质押池服务配置的最后区块号
-		if err := ctx.Ctx.DB.Model(&model.Chain{}).Where("chain_id = ? AND service_type = ?", int64(chainId), "staking").Update("last_block_num", targetBlockNum).Error; err != nil {
+		if err := ctx.Ctx.DB.Model(&model.Chain{}).Where("chain_id = ? AND address = ?", int64(chainId), address).Update("last_block_num", targetBlockNum).Error; err != nil {
 			log.Logger.Error("更新质押池最后区块号失败", zap.Int("chain_id", chainId), zap.Error(err))
 			return err
 		}
@@ -372,7 +372,7 @@ func updateDbUserAmount(userOperationRecords []*model.UserOperationRecord, chain
 			}
 		}
 		// 更新质押池服务配置的最后区块号
-		if err := tx.Model(&model.Chain{}).Where("chain_id = ?", int64(chainId)).Update("last_block_num", targetBlockNum).Error; err != nil {
+		if err := tx.Model(&model.Chain{}).Where("chain_id = ? AND address = ?", int64(chainId), address).Update("last_block_num", targetBlockNum).Error; err != nil {
 			log.Logger.Error("更新质押池最后区块号失败", zap.Int("chain_id", chainId), zap.Error(err))
 			return err
 		}
