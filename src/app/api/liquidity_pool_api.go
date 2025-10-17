@@ -3,11 +3,6 @@ package api
 import (
 	"context"
 	"fmt"
-	"math/big"
-	"net/http"
-	"strconv"
-	"time"
-
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -16,10 +11,15 @@ import (
 	"github.com/mumu/cryptoSwap/src/app/api/dto"
 	"github.com/mumu/cryptoSwap/src/app/model"
 	"github.com/mumu/cryptoSwap/src/app/service"
+	commonUtil "github.com/mumu/cryptoSwap/src/common"
 	"github.com/mumu/cryptoSwap/src/core/ctx"
 	"github.com/mumu/cryptoSwap/src/core/log"
 	"github.com/mumu/cryptoSwap/src/core/result"
 	"go.uber.org/zap"
+	"math/big"
+	"net/http"
+	"strconv"
+	"time"
 )
 
 type LiquidityPoolApi struct {
@@ -32,18 +32,6 @@ func NewLiquidityPoolApi() *LiquidityPoolApi {
 	}
 }
 
-// --- 通用 API 辅助 ---
-func parseChainId(chainIdStr string) (int64, bool) {
-	if chainIdStr == "" {
-		return 0, true
-	}
-	id, err := strconv.ParseInt(chainIdStr, 10, 64)
-	if err != nil {
-		return 0, false
-	}
-	return id, true
-}
-
 func parsePagination(pageStr, pageSizeStr string) dto.Pagination {
 	page, err := strconv.Atoi(pageStr)
 	if err != nil || page < 1 {
@@ -54,10 +42,6 @@ func parsePagination(pageStr, pageSizeStr string) dto.Pagination {
 		pageSize = 20
 	}
 	return dto.Pagination{Page: page, PageSize: pageSize, Offset: (page - 1) * pageSize}
-}
-
-func validateHexAddress(addr string) bool {
-	return addr != "" && common.IsHexAddress(addr)
 }
 
 // GetRPCURL 根据chainId获取RPC端点
@@ -294,11 +278,11 @@ func GetUserLiquidityPools(c *gin.Context) {
 	pageStr := c.DefaultQuery("page", "1")
 	pageSizeStr := c.DefaultQuery("pageSize", "20")
 
-	if !validateHexAddress(userAddress) {
+	if !commonUtil.ValidateHexAddress(userAddress) {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
-	chainId, ok := parseChainId(chainIdStr)
+	chainId, ok := commonUtil.ParseChainId(chainIdStr)
 	if !ok {
 		result.Error(c, result.InvalidParameter)
 		return
@@ -343,7 +327,7 @@ func GetLiquidityPools(c *gin.Context) {
 	pageStr := c.DefaultQuery("page", "1")
 	pageSizeStr := c.DefaultQuery("pageSize", "20")
 
-	chainId, ok := parseChainId(chainIdStr)
+	chainId, ok := commonUtil.ParseChainId(chainIdStr)
 	if !ok {
 		result.Error(c, result.InvalidParameter)
 		return
@@ -373,7 +357,7 @@ func (lp *LiquidityPoolApi) GetLiquidityPoolEvents(c *gin.Context) {
 	pageStr := c.DefaultQuery("page", "1")
 	pageSizeStr := c.DefaultQuery("pageSize", "20")
 
-	chainId, ok := parseChainId(chainIdStr)
+	chainId, ok := commonUtil.ParseChainId(chainIdStr)
 	if !ok {
 		result.Error(c, result.InvalidParameter)
 		return
@@ -506,7 +490,7 @@ func (lp *LiquidityPoolApi) GetLiquidityPoolStats(c *gin.Context) {
 // GetPoolPerformance 返回用户相关池子的 24 小时交易量表现
 func (lp *LiquidityPoolApi) GetPoolPerformance(c *gin.Context) {
 	walletAddress := c.Query("walletAddress")
-	if !validateHexAddress(walletAddress) {
+	if !commonUtil.ValidateHexAddress(walletAddress) {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
@@ -540,13 +524,13 @@ func (lp *LiquidityPoolApi) GetRewardDistribution(c *gin.Context) {
 	// 优先从token解析地址
 	addrFromToken, _ := c.Get("address")
 	var walletAddress string
-	if s, ok := addrFromToken.(string); ok && validateHexAddress(s) {
+	if s, ok := addrFromToken.(string); ok && commonUtil.ValidateHexAddress(s) {
 		walletAddress = s
 	}
 	if walletAddress == "" {
 		walletAddress = c.Query("walletAddress")
 	}
-	if !validateHexAddress(walletAddress) {
+	if !commonUtil.ValidateHexAddress(walletAddress) {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
@@ -761,3 +745,13 @@ func makePairAndVolumeItem(p model.LiquidityPool, svc *service.LiquidityPoolServ
 		"24hVolume": formatUSD(volUSD),
 	}
 }
+
+//func (lp *LiquidityPoolApi) PoolMappingHandler(c *gin.Context) error {
+//	poolMap, err := c.service.GetPoolMapping()
+//	if err != nil {
+//		log.Error("Unable to fetch pool table data: %v", err)
+//		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+//	}
+//
+//	return c.JSON(poolMap)
+//}

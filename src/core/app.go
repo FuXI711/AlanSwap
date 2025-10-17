@@ -112,5 +112,5 @@ func initSync(c context.Context) {
 	sync.StartSync(c)
 }
 func initComputeIntegral() {
-	go sync.InitComputeIntegral()
+	sync.InitComputeIntegral()
 }
