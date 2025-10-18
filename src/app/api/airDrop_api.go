@@ -46,15 +46,15 @@ func extractWalletAddress(c *gin.Context) string {
 }
 
 // Overview godoc
-// @Summary 获取空投概览
-// @Description 获取用户的空投概览信息
+// @Summary      获取空投概览
+// @Description  获取用户的空投概览信息
 // @Tags airdrop
-// @Accept json
-// @Produce json
-// @Param Authorization header string false "Bearer token"
-// @Param walletAddress query string false "用户地址"
-// @Success 200 {object} result.Response{data=map[string]interface{}}
-// @Router /api/v1/airdrop/overview [get]
+// @Accept       json
+// @Produce      json
+// @Param        Authorization  header  string  false  "Bearer token"
+// @Param        walletAddress  query   string  false  "用户地址"
+// @Success      200 {object} result.Response{data=map[string]interface{}}
+// @Router       /api/v1/airdrop/overview [get]
 func (a AirDropApi) Overview(c *gin.Context) {
 	addr := extractWalletAddress(c)
 	if addr == "" {
@@ -145,19 +145,7 @@ func (a AirDropApi) Available(c *gin.Context) {
 	})
 }
 
-// Ranking godoc
-// @Summary 获取空投排行榜
-// @Description 获取空投参与用户的排行榜
-// @Tags airdrop
-// @Accept json
-// @Produce json
-// @Param airdropId query string false "空投ID"
-// @Param sortBy query string false "排序方式" Enums(amount, time) default(amount)
-// @Param page query int false "页码" default(1)
-// @Param size query int false "每页大小" default(20)
-// @Param showAddress query bool false "是否显示地址" default(true)
-// @Success 200 {object} result.Response{data=map[string]interface{}}
-// @Router /api/v1/airdrop/ranking [get]
+// POST /api/v1/airdrop/ranking
 func (a AirDropApi) Ranking(c *gin.Context) {
 	airdropId := strings.TrimSpace(c.DefaultQuery("airdropId", ""))
 	if airdropId != "" {
@@ -208,15 +196,7 @@ type UserTaskListRequest struct {
 	WalletAddress string `json:"walletAddress"`
 }
 
-// UserTaskList godoc
-// @Summary 获取用户任务列表
-// @Description 获取用户的空投任务列表
-// @Tags airdrop
-// @Accept json
-// @Produce json
-// @Param request body UserTaskListRequest true "用户任务列表请求参数"
-// @Success 200 {object} result.Response{data=map[string]interface{}}
-// @Router /api/v1/userTask/list [post]
+// POST /api/v1/userTask/list
 func (a AirDropApi) UserTaskList(c *gin.Context) {
 	var req UserTaskListRequest
 	// 优先从JSON body获取参数
@@ -276,15 +256,7 @@ type ClaimRewardRequest struct {
 	WalletAddress string `json:"walletAddress"`
 }
 
-// ClaimReward godoc
-// @Summary 领取空投奖励
-// @Description 用户领取空投奖励
-// @Tags airdrop
-// @Accept json
-// @Produce json
-// @Param request body ClaimRewardRequest true "领取奖励请求参数"
-// @Success 200 {object} result.Response{data=map[string]interface{}}
-// @Router /api/v1/airdrop/claimReward [post]
+// POST /api/v1/airdrop/claimReward
 func (a AirDropApi) ClaimReward(c *gin.Context) {
 	var req ClaimRewardRequest
 	var airdropId, addr string

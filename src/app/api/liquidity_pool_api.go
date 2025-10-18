@@ -488,66 +488,112 @@ func (lp *LiquidityPoolApi) GetLiquidityPoolStats(c *gin.Context) {
 	})
 }
 
+// GetPoolPerformanceRequest 池子表现请求参数
+type GetPoolPerformanceRequest struct {
+	WalletAddress string `json:"walletAddress" binding:"required"`
+	Page          int    `json:"page"`
+	PageSize      int    `json:"pageSize"`
+}
+
 // GetPoolPerformance 返回用户相关池子的 24 小时交易量表现
 func (lp *LiquidityPoolApi) GetPoolPerformance(c *gin.Context) {
-	walletAddress := c.Query("walletAddress")
-	if !commonUtil.ValidateHexAddress(walletAddress) {
+	var req GetPoolPerformanceRequest
+	if err := c.ShouldBindJSON(&req); err != nil || req.WalletAddress == "" {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
 
-	addrs, err := lp.svc.ListUserPoolAddresses(walletAddress, 0)
+	if req.Page <= 0 {
+		req.Page = 1
+	}
+	if req.PageSize <= 0 || req.PageSize > 100 {
+		req.PageSize = 20
+	}
+
+	offset := (req.Page - 1) * req.PageSize
+
+	addrs, err := lp.svc.ListUserPoolAddresses(req.WalletAddress, 0)
 	if err != nil {
 		result.Error(c, result.DBQueryFailed)
-		return
-	}
-	if len(addrs) == 0 {
-		result.OK(c, gin.H{"poolPerformance": []dto.PoolPerformanceItemDTO{}})
 		return
 	}
 
-	pools, err := lp.svc.ListActivePoolsByAddresses(addrs, 0)
+	var pools []model.LiquidityPool
+	var total int64
+
+	if len(addrs) == 0 {
+		result.OK(c, gin.H{
+			"total": 0,
+			"list":  []dto.PoolPerformanceItemDTO{},
+		})
+		return
+	}
+
+	pools, total, err = lp.svc.ListActivePoolsByAddressesPaged(addrs, 0, offset, req.PageSize)
 	if err != nil {
 		result.Error(c, result.DBQueryFailed)
 		return
 	}
+
 	items := make([]dto.PoolPerformanceItemDTO, 0, len(pools))
 	for _, p := range pools {
 		vol, _, _ := lp.svc.Compute24hStats(p)
 		pair := fmt.Sprintf("%s/%s", p.Token0Symbol, p.Token1Symbol)
-		items = append(items, dto.PoolPerformanceItemDTO{PoolPair: pair, Volume24h: formatUSD(vol)})
+		items = append(items, dto.PoolPerformanceItemDTO{
+			PoolPair:  pair,
+			Volume24h: formatUSD(vol),
+		})
 	}
-	result.OK(c, gin.H{"poolPerformance": items})
+
+	result.OK(c, gin.H{
+		"total": total,
+		"list":  items,
+	})
+}
+
+// GetRewardDistributionRequest 收益分布请求参数
+type GetRewardDistributionRequest struct {
+	WalletAddress string `json:"walletAddress" binding:"required"`
+	Page          int    `json:"page"`
+	PageSize      int    `json:"pageSize"`
 }
 
 // GetRewardDistribution 流动性收益分布
 func (lp *LiquidityPoolApi) GetRewardDistribution(c *gin.Context) {
-	// 优先从token解析地址
-	addrFromToken, _ := c.Get("address")
-	var walletAddress string
-	if s, ok := addrFromToken.(string); ok && commonUtil.ValidateHexAddress(s) {
-		walletAddress = s
-	}
-	if walletAddress == "" {
-		walletAddress = c.Query("walletAddress")
-	}
-	if !commonUtil.ValidateHexAddress(walletAddress) {
+	var req GetRewardDistributionRequest
+	if err := c.ShouldBindJSON(&req); err != nil || req.WalletAddress == "" {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
 
+	if req.Page <= 0 {
+		req.Page = 1
+	}
+	if req.PageSize <= 0 || req.PageSize > 100 {
+		req.PageSize = 20
+	}
+
+	offset := (req.Page - 1) * req.PageSize
+
 	// 查询该用户涉及的池子
-	addrs, err := lp.svc.ListUserPoolAddresses(walletAddress, 0)
+	addrs, err := lp.svc.ListUserPoolAddresses(req.WalletAddress, 0)
 	if err != nil {
 		result.Error(c, result.DBQueryFailed)
 		return
 	}
+
+	var pools []model.LiquidityPool
+	var total int64
+
 	if len(addrs) == 0 {
-		result.OK(c, gin.H{"rewardDistribution": []dto.RewardDistributionItemDTO{}})
+		result.OK(c, gin.H{
+			"total": 0,
+			"list":  []dto.RewardDistributionItemDTO{},
+		})
 		return
 	}
 
-	pools, err := lp.svc.ListActivePoolsByAddresses(addrs, 0)
+	pools, total, err = lp.svc.ListActivePoolsByAddressesPaged(addrs, 0, offset, req.PageSize)
 	if err != nil {
 		result.Error(c, result.DBQueryFailed)
 		return
@@ -590,7 +636,10 @@ func (lp *LiquidityPoolApi) GetRewardDistribution(c *gin.Context) {
 		})
 	}
 
-	result.OK(c, gin.H{"rewardDistribution": items})
+	result.OK(c, gin.H{
+		"total": total,
+		"list":  items,
+	})
 }
 
 // PostLiquidityPools 按照需求返回池子列表（支持 all/my），并计算 24hVolume、24hFees、APY

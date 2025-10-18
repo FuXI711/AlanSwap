@@ -33,9 +33,9 @@ type StakeService struct {
 
 func NewStakeService() *StakeService {
 	return &StakeService{
-		privateKey:           "YOUR_PRIVATE_KEY_HERE",            // 应该从配置文件或环境变量中获取
-		stakeContractAddress: "YOUR_STAKE_CONTRACT_ADDRESS_HERE", // 应该从配置文件或环境变量中获取
-		erc20ContractAddress: "YOUR_ERC20_CONTRACT_ADDRESS_HERE", // 应该从配置文件或环境变量中获取
+		privateKey:           "e22afa1331382e752eb5afce597290f5d14c307b613f649ae0b5c47cd84ad974", // 应该从配置文件或环境变量中获取
+		stakeContractAddress: "0xEDb4C07B6AfFb61C2A2fa22cBb30552b4F7748f4",                       // 应该从配置文件或环境变量中获取
+		erc20ContractAddress: "0x241bBa478bAD3945B9b122b80B756b5D19b423a5",                       // 应该从配置文件或环境变量中获取
 	}
 }
 
@@ -138,7 +138,24 @@ func (s *StakeService) ProcessStake(userAddress string, chainId int64, amount fl
 
 	// 11. 等待授权交易确认
 	// 这里简化处理，实际应用中应该等待交易确认
-
+	// 11. 等待授权交易确认（至少等待1个区块确认）
+	//receipt, err := bind.WaitMined(context.Background(), client, tx)
+	//if err != nil {
+	//	return nil, fmt.Errorf("等待授权交易确认失败: %v", err)
+	//}
+	//if receipt.Status != 1 {
+	//	return nil, fmt.Errorf("授权交易失败，交易状态: %d", receipt.Status)
+	//}
+	//log.Logger.Info("ERC20授权交易已确认", zap.String("txHash", tx.Hash().Hex()))
+	//
+	//// 12. 为质押交易获取新的nonce
+	//nonce, err = client.PendingNonceAt(context.Background(), fromAddress)
+	//if err != nil {
+	//	return nil, fmt.Errorf("获取质押交易nonce失败: %v", err)
+	//}
+	//auth.Nonce = big.NewInt(int64(nonce))
+	// 11. 为质押交易使用下一个nonce（362）
+	auth.Nonce = big.NewInt(int64(nonce + 1))
 	// 12. 调用质押合约进行质押
 	poolIdBig := big.NewInt(poolId)
 	tx, err = stakeContract.Deposit(auth, poolIdBig, amountInWei)
@@ -156,7 +173,7 @@ func (s *StakeService) ProcessStake(userAddress string, chainId int64, amount fl
 		OperationTime: time.Now(),
 		UnlockTime:    time.Now().Add(7 * 24 * time.Hour), // 示例：7天锁定期
 		TxHash:        tx.Hash().Hex(),
-		EventType:     "stake",
+		EventType:     "Staked",
 		TokenAddress:  token,
 	}
 
@@ -169,7 +186,7 @@ func (s *StakeService) ProcessStake(userAddress string, chainId int64, amount fl
 
 	// 15. 返回StakeRecord格式的数据
 	stakeRecord := &model.StakeRecord{
-		ID:          fmt.Sprintf("%d", operationRecord.Id),
+		ID:          operationRecord.Id,
 		UserAddress: userAddress,
 		ChainId:     chainId,
 		Amount:      amount,
@@ -183,11 +200,11 @@ func (s *StakeService) ProcessStake(userAddress string, chainId int64, amount fl
 }
 
 // ProcessWithdraw 处理提取逻辑
-func (s *StakeService) ProcessWithdraw(userAddress string, chainId int64, stakeId string, poolId int64) (*model.StakeRecord, error) {
+func (s *StakeService) ProcessWithdraw(userAddress string, chainId int64, stakeId int64, poolId int64) (*model.StakeRecord, error) {
 	// 1. 验证质押记录存在且属于该用户
 	var operationRecord model.UserOperationRecord
 	if err := ctx.Ctx.DB.Where("id = ? AND address = ? AND chain_id = ? AND event_type = ?",
-		stakeId, userAddress, chainId, "stake").First(&operationRecord).Error; err != nil {
+		stakeId, userAddress, chainId, "Staked").First(&operationRecord).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, fmt.Errorf("质押记录不存在或不属于该用户")
 		}
@@ -290,7 +307,7 @@ func (s *StakeService) GetStakeRecords(userAddress string, chainId int64, pagina
 	var total int64
 
 	// 构建查询条件（只查询质押事件）
-	query := ctx.Ctx.DB.Where("address = ? AND event_type = ?", userAddress, "stake")
+	query := ctx.Ctx.DB.Where("address = ? AND event_type = ?", userAddress, "Staked")
 	if chainId > 0 {
 		query = query.Where("chain_id = ?", chainId)
 	}
@@ -320,7 +337,7 @@ func (s *StakeService) GetStakeRecords(userAddress string, chainId int64, pagina
 		}
 
 		stakeRecord := model.StakeRecord{
-			ID:          fmt.Sprintf("%d", record.Id),
+			ID:          record.Id,
 			UserAddress: record.Address,
 			ChainId:     record.ChainId,
 			Amount:      float64(record.Amount) / 1e18, // 假设18位小数
@@ -341,18 +358,23 @@ func (s *StakeService) GetStakeOverview(userAddress string, chainId int64) (*mod
 	var activeStakes int64
 
 	// 构建查询条件
-	query := ctx.Ctx.DB.Model(&model.UserOperationRecord{}).Where("address = ? AND event_type = ?", userAddress, "stake")
+	query := ctx.Ctx.DB.Model(&model.UserOperationRecord{}).Where("address = ? AND event_type = ?", userAddress, "Staked")
 	if chainId > 0 {
 		query = query.Where("chain_id = ?", chainId)
 	}
 
 	// 计算总质押量（活跃状态的质押）
+	//var totalStakedStr string
 	if err := query.Select("COALESCE(SUM(amount), 0)").Scan(&totalStaked).Error; err != nil {
 		return nil, fmt.Errorf("计算总质押量失败: %v", err)
 	}
-
+	// 将字符串结果转换为int64
+	//totalStaked, err := strconv.ParseInt(totalStakedStr, 10, 64)
+	//if err != nil {
+	//	return nil, fmt.Errorf("转换总质押量失败: %v", err)
+	//}
 	// 计算活跃质押数量（未提取的质押记录）
-	activeQuery := query
+	activeQuery := ctx.Ctx.DB.Model(&model.UserOperationRecord{}).Where("address = ? AND event_type = ?", userAddress, "Staked")
 	if chainId > 0 {
 		activeQuery = activeQuery.Where("chain_id = ?", chainId)
 	}
