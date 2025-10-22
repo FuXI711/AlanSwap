@@ -104,6 +104,16 @@ func (auth *AuthApi) Verify(c *gin.Context) {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
+
+	// 登录成功后：为该用户自动领取（绑定）所有任务，初始化为进行中(1)
+	addr := strings.ToLower(req.WalletAddress)
+	_ = ctx.Ctx.DB.Exec(`
+INSERT INTO user_task_status (wallet_address, task_id, user_status)
+SELECT ?, t.task_id, 1
+FROM tasks t
+ON CONFLICT (wallet_address, task_id) DO NOTHING
+`, addr).Error
+
 	result.OK(c, map[string]interface{}{
 		"access_token":  accessToken,
 		"refresh_token": refreshToken,
