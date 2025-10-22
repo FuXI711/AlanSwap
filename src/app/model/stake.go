@@ -4,7 +4,7 @@ import "time"
 
 // StakeRecord 质押记录
 type StakeRecord struct {
-	ID          string    `json:"id" gorm:"primaryKey"`
+	ID          int64     `json:"id" gorm:"primaryKey"`
 	UserAddress string    `json:"userAddress" gorm:"index"`
 	ChainId     int64     `json:"chainId" gorm:"index"`
 	Amount      float64   `json:"amount"`

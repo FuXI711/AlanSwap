@@ -2,9 +2,10 @@ package result
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"go.opentelemetry.io/otel/trace"
-	"net/http"
 )
 
 const (
@@ -36,6 +37,8 @@ const (
 	MQError = 200300
 	// EthereumError 以太坊客户端报错 2004xx
 	EthereumError = 200400
+	StakeError    = 200401
+	// StakeError 质押错误 2005xx
 )
 
 // ErrMsgMap 业务错误
@@ -79,6 +82,10 @@ var ErrMsgMap = map[int]map[int]string{
 	EthereumError: {
 		LANG_ZH: "ETH客户端错误",
 		LANG_EN: "ETH client error",
+	},
+	StakeError: {
+		LANG_ZH: "质押失败",
+		LANG_EN: "Stake Error",
 	},
 }
 

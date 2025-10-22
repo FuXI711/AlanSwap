@@ -74,12 +74,12 @@ func ApiBind(r *gin.Engine, ctx *ctx.Context) {
 	liquidityPoolApi := api.NewLiquidityPoolApi()
 	//1.新增：获取流动性池统计数据
 	v.GET("/liquidity/stats", liquidityPoolApi.GetLiquidityStats)
-	// 2.新增：POST 版本的池子列表（支持 all/my 和统计字段）
-	v.GET("/liquidity/pools", liquidityPoolApi.PostLiquidityPools)
-	// 3.新增：GET 流动性收益分布
-	v.GET("/liquidity/rewardDistribution", liquidityPoolApi.GetRewardDistribution)
-	// 4.新增：GET 池子表现（按用户地址返回 poolPair 与 24hVolume）
-	v.GET("/liquidity/poolPerformance", liquidityPoolApi.GetPoolPerformance)
+	// 2.修改：POST 版本的池子列表（支持 all/my 和统计字段）
+	v.POST("/liquidity/pools", liquidityPoolApi.PostLiquidityPools)
+	// 3.修改：POST 流动性收益分布
+	v.POST("/liquidity/rewardDistribution", liquidityPoolApi.GetRewardDistribution)
+	// 4.修改：POST 池子表现（按用户地址返回 poolPair 与 24hVolume）
+	v.POST("/liquidity/poolPerformance", liquidityPoolApi.GetPoolPerformance)
 	//5.获取流动性池事件列表
 	v.GET("/liquidity-pool-events", liquidityPoolApi.GetLiquidityPoolEvents)
 
@@ -95,4 +95,15 @@ func ApiBind(r *gin.Engine, ctx *ctx.Context) {
 	v.POST("/userTask/list", airDropApi.UserTaskList)
 	//用户领取空投（获取prof）
 	v.POST("/airdrop/claimReward", airDropApi.ClaimReward)
+
+	// 质押相关接口（需要验证）
+	stakeApi := api.NewStakeApi()
+	// 质押代币
+	v.POST("/stake", stakeApi.Stake)
+	// 提取质押的代币
+	v.POST("/stake/withdraw", stakeApi.Withdraw)
+	// 获取用户的质押记录
+	v.POST("/stake/records", stakeApi.GetStakeRecords)
+	// 获取用户的质押概览
+	v.POST("/stake/overview", stakeApi.GetStakeOverview)
 }

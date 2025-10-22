@@ -24,6 +24,7 @@ type StakeRequest struct {
 	ChainId     int64   `json:"chainId" binding:"required"`
 	Amount      float64 `json:"amount" binding:"required,gt=0"`
 	Token       string  `json:"token" binding:"required"`
+	PoolId      string  `json:"poolId" binding:"required"`
 }
 
 // WithdrawRequest 提取请求参数
@@ -31,6 +32,7 @@ type WithdrawRequest struct {
 	UserAddress string `json:"userAddress" binding:"required"`
 	ChainId     int64  `json:"chainId" binding:"required"`
 	StakeId     string `json:"stakeId" binding:"required"`
+	PoolId      string `json:"poolId" binding:"required"`
 }
 
 // GetStakeRecordsRequest 获取质押记录请求参数
@@ -39,6 +41,12 @@ type GetStakeRecordsRequest struct {
 	ChainId     int64  `form:"chainId" binding:"required"`
 	Page        int    `form:"page,default=1"`
 	PageSize    int    `form:"pageSize,default=20"`
+}
+
+// GetStakeOverviewRequest 获取质押概览请求参数
+type GetStakeOverviewRequest struct {
+	UserAddress string `json:"userAddress" binding:"required"`
+	ChainId     int64  `json:"chainId" binding:"required"`
 }
 
 // Stake 质押接口
@@ -62,17 +70,22 @@ func (s *StakeApi) Stake(c *gin.Context) {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
-
-	stakeRecord, err := s.svc.ProcessStake(req.UserAddress, req.ChainId, req.Amount, req.Token)
+	// 将poolId字符串转换为int64
+	poolId, err := commonUtil.ParseInt64(req.PoolId)
 	if err != nil {
-		result.SysError(c, "质押失败: "+err.Error())
+		result.Error(c, result.InvalidParameter)
+		return
+	}
+	stakeRecord, err := s.svc.ProcessStake(req.UserAddress, req.ChainId, req.Amount, req.Token, poolId)
+	if err != nil {
+		result.Error(c, result.StakeError)
 		return
 	}
 
 	result.OK(c, stakeRecord)
 }
 
-// Withdraw 提取质押
+// Withdraw godoc
 // @Summary 提取质押的代币
 // @Description 用户提取已质押的代币
 // @Tags stake
@@ -88,22 +101,32 @@ func (s *StakeApi) Withdraw(c *gin.Context) {
 		return
 	}
 
-	// 验证地址格式
-	if !!commonUtil.ValidateHexAddress(req.UserAddress) {
+	if !commonUtil.ValidateHexAddress(req.UserAddress) {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
-
-	stakeRecord, err := s.svc.ProcessWithdraw(req.UserAddress, req.ChainId, req.StakeId)
+	// 将poolId字符串转换为int64
+	poolId, err := commonUtil.ParseInt64(req.PoolId)
 	if err != nil {
-		result.SysError(c, "提取失败: "+err.Error())
+		result.Error(c, result.InvalidParameter)
+		return
+	}
+	// 将poolId字符串转换为int64
+	stakeId, err := commonUtil.ParseInt64(req.StakeId)
+	if err != nil {
+		result.Error(c, result.InvalidParameter)
+		return
+	}
+	stakeRecord, err := s.svc.ProcessWithdraw(req.UserAddress, req.ChainId, stakeId, poolId)
+	if err != nil {
+		result.Error(c, result.DBQueryFailed)
 		return
 	}
 
 	result.OK(c, stakeRecord)
 }
 
-// GetStakeRecords 获取质押记录
+// GetStakeRecords godoc
 // @Summary 获取用户的质押记录
 // @Description 分页获取用户的质押记录
 // @Tags stake
@@ -117,13 +140,13 @@ func (s *StakeApi) Withdraw(c *gin.Context) {
 // @Router /api/v1/stake/records [get]
 func (s *StakeApi) GetStakeRecords(c *gin.Context) {
 	var req GetStakeRecordsRequest
-	if err := c.ShouldBindQuery(&req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
 
 	// 验证地址格式
-	if !!commonUtil.ValidateHexAddress(req.UserAddress) {
+	if !commonUtil.ValidateHexAddress(req.UserAddress) {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
@@ -162,26 +185,18 @@ func (s *StakeApi) GetStakeRecords(c *gin.Context) {
 // @Success 200 {object} result.Response{data=model.StakeOverview}
 // @Router /api/v1/stake/overview [get]
 func (s *StakeApi) GetStakeOverview(c *gin.Context) {
-	userAddress := c.Query("userAddress")
-	chainIdStr := c.Query("chainId")
-
-	if userAddress == "" {
+	var req GetStakeOverviewRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
 
-	if !commonUtil.ValidateHexAddress(userAddress) {
+	if !commonUtil.ValidateHexAddress(req.UserAddress) {
 		result.Error(c, result.InvalidParameter)
 		return
 	}
 
-	chainId, ok := commonUtil.ParseChainId(chainIdStr)
-	if !ok {
-		result.Error(c, result.InvalidParameter)
-		return
-	}
-
-	overview, err := s.svc.GetStakeOverview(userAddress, chainId)
+	overview, err := s.svc.GetStakeOverview(req.UserAddress, req.ChainId)
 	if err != nil {
 		result.SysError(c, "获取概览失败: "+err.Error())
 		return
